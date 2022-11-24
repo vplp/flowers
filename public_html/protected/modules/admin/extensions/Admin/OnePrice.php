@@ -27,7 +27,7 @@ class OnePrice extends CWidget
 		$_flowers = '<div class="features_one">
 						<div class="features_one_label">Товар</div>
 						<div class="features_one_input">
-							<select class="price_field" name="height" id="name__'.$price['id'].'">
+							<select class="price_field select-product-name" name="name" id="name__'.$price['id'].'">
 								<option'.(($price['name'] == '') ? ' selected' : '').' value=""></option>';
 
 		if (!empty($flowers)) {
@@ -41,7 +41,7 @@ class OnePrice extends CWidget
 		$_countries = '<div class="features_one">
 						<div class="features_one_label">Страна</div>
 						<div class="features_one_input">
-							<select class="price_field" name="height" id="country__'.$price['id'].'">
+							<select class="price_field" name="country" id="country__'.$price['id'].'">
 								<option'.(($price['country'] == '') ? ' selected' : '').' value=""></option>';
 
 		if (!empty($countries)) {

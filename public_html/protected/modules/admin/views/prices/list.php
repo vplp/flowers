@@ -1,13 +1,15 @@
 <div class="content_left">
+	
 <?php $this->widget('application.modules.admin.extensions.Admin.Listing',array(
 		'ARRitems'=> $ARRitems,
 		'ARRfields' => array(
-				array('name'=> 'name', 'label'=> 'Название', 'link' => true, 'style' => 'text-align:left'),
+				array('name'=> 'name', 'label'=> 'Товар', 'link' => true, 'style' => 'text-align:left'),
 				array('name'=> 'country', 'label'=> 'Страна', 'link' => false, 'style' => 'text-align:left'),
 				array('name'=> 'height', 'label'=> 'Высота', 'link' => false, 'style' => 'text-align:left'),
 				array('name'=> 'cost', 'label'=> 'Цена', 'link' => false, 'style' => 'text-align:left'),
 				array('name'=> 'season', 'label'=> 'Сезонный', 'style' => 'text-align:left'),
 				array('name'=> 'order', 'label'=> 'Под заказ', 'style' => 'text-align:left'),
+				
 		),
 		
 		'id_table' => 'prices',
@@ -25,4 +27,3 @@
 	
 </div>
 <div class="br"></div>
-

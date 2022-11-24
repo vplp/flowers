@@ -10,7 +10,8 @@ class PricesController extends Controller
 	}	
 	
 	public function actionList() {
-		if (!Yii::app()->user->getState('auth')) $this->redirect('/',array());
+		if (!Yii::app()->user->getState('auth'))
+		    $this->redirect('/',array());
 
 		$this->render('list',array(
 		 		'ARRitems' => $this->module->GetAllPrices(),

@@ -5,6 +5,7 @@
 
 $this->widget('application.modules.admin.extensions.Admin.OnePage',array(
 		'ARRpage'=> $ARRpage,
+		'ARRregions' => $ARRregions
 ));
 ?>
 </div>

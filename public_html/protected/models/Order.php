@@ -64,11 +64,11 @@ class Order extends CActiveRecord
 			array('status', 'length', 'max'=>9),
 			array('to_phone, from_phone', 'length', 'max'=>18, 'min'=>18),
 			array('date, time, from_email, mod_datetime, zip_code, city, delivery, transaction_id', 'length', 'max'=>255),
-			array('payment, paid, to_notice,,to_from, picture', 'length', 'max'=>1),
+			array('payment, paid, to_notice, to_from, picture', 'length', 'max'=>1),
 			array('from_notice', 'length', 'max'=>4),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, status, date, time, to_name, address, to_phone, from_email, products_id, price, comment, mod_datetime, discount, discount_price, admin_comment, zip_code, city, delivery, payment, paid, transaction_id, from_name, from_phone, to_notice, from_notice, picture', 'safe', 'on'=>'search'),
+			array('id, status, date, time, to_name, address, address_region, budget, color_gamma, sostav_buketa, to_phone, from_email, products_id, price, comment, mod_datetime, discount, discount_price, admin_comment, zip_code, city, delivery, payment, paid, transaction_id, from_name, from_phone, to_notice, from_notice, picture', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -116,6 +116,10 @@ class Order extends CActiveRecord
 			'from_notice' => 'From Notice',
 			'picture' => 'Picture',
 			'to_from' => 'To From',
+			'address_region' => 'Adress Region',
+			'budget' => 'Budget',
+			'color_gamma' => 'Color Gamma',
+			'sostav_buketa' => 'Sostav Buketa'
 		);
 	}
 
@@ -136,6 +140,7 @@ class Order extends CActiveRecord
 		$criteria->compare('time',$this->time,true);
 		$criteria->compare('to_name',$this->to_name,true);
 		$criteria->compare('address',$this->address,true);
+		$criteria->compare('address_region',$this->address_region,true);
 		$criteria->compare('to_phone',$this->to_phone);
 		$criteria->compare('from_email',$this->from_email,true);
 		$criteria->compare('products_id',$this->products_id,true);
@@ -156,6 +161,9 @@ class Order extends CActiveRecord
 		$criteria->compare('to_notice',$this->to_notice,true);
 		$criteria->compare('from_notice',$this->from_notice,true);
 		$criteria->compare('picture',$this->picture,true);
+		$criteria->compare('budget',$this->budget,true);
+		$criteria->compare('color_gamma',$this->color_gamma,true);
+		$criteria->compare('sostav_buketa',$this->sostav_buketa,true);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,

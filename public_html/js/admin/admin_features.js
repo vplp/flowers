@@ -1,5 +1,6 @@
 $(function(){
 	
+	
 	$('input, textarea, select').click(function(){
 		if (($(this).attr('type') && $(this).attr('type') != 'checkbox' && $(this).attr('type') != 'radio') || !$(this).attr('type') )
 			$(this).addClass('input_selected_click');
@@ -119,7 +120,7 @@ $(function(){
 	
 	$('.delete_feature').click(function(){
 		
-		if (confirm("Вы дуйствительно хотите удалить это свойство")) {
+		if (confirm("Вы действительно хотите удалить это свойство")) {
 			
 		} else {
 			return true;

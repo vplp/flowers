@@ -626,6 +626,9 @@ $(function() {
 		$('body.body_edit .sortable .products_line .ias_parent item').disableSelection();
 		}
 	}
+
+
+
 	
 });
 

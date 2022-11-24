@@ -5,6 +5,7 @@ class OnePage extends CWidget
 
 	public $htmlOptions =array();
 	public $ARRpage =array();
+	public $ARRregions =array();
 
 	public function init()
 	{
@@ -18,13 +19,22 @@ class OnePage extends CWidget
 	 */
 	public function run()
 	{
-		echo $this->RenderOnePage($this->ARRpage);
+		echo $this->RenderOnePage($this->ARRpage, $this->ARRregions);
 	}
 
-	public function RenderOnePage($page)
+	public function RenderOnePage($page, $regions)
 	{
+
+		$region_res = '';
 		
-		return '<a target="_blank" href="/'.$page['uri'].'" class="return_for_list non"></a>
+		foreach($regions as $region){
+			
+			$region_res .= '<tr id="'.$region['id'].'"><td><input type="text" name="region_name" value="'.$region["region_name"].'"</td>';
+			$region_res .= '<td><input type="text" name="region_price" value="'.$region["region_price"].'"</td></tr>';
+		}
+
+		$body = '';
+		$body .= '<a target="_blank" href="/'.$page['uri'].'" class="return_for_list non"></a>
 				<h1 style="display:none;" id="page_'.$page['id'].'"></h1>
 				
 				<div class="features_one">
@@ -66,6 +76,19 @@ class OnePage extends CWidget
 							<div class="features_one_input"><input style="width:520px" class="page_field"  type="text" name="addres" id="addres__'.$page['id'].'" value="'.$page['addres'].'"></div>
 						</div>
 				' : '').'
+
+				'.(($page['uri'] == 'dostavka') ? '
+					<div class="features_one-delivery">
+						<div class="features_one_label">Регионы доставки</div>
+						<table id="regions-delivery-admin">
+							<tr>
+								<td>Регион</td>
+								<td>Тариф</td>
+							</tr>
+							'. $region_res .'
+						</table>
+					</div>
+				' : '').'
 				
 				'.(($page['uri'] != '/' && ($page['uri'] != 'contacts')) ? '
 						<div class="block_label">uri</div>
@@ -88,15 +111,22 @@ class OnePage extends CWidget
 						<div class="features_one">
 								<div class="features_one_label">Тайтл</div>
 								<div class="features_one_input"><input class="page_field" type="text" name="meta_title" id="meta_title__'.$page['id'].'" value="'.$page['meta_title'].'"></div>
-							</div>
+						</div>
+
+						<div class="features_one">
+								<div class="features_one_label">Заголовок на странице</div>
+								<div class="features_one_input"><input class="page_field" type="text" name="page_title" id="page_title__'.$page['id'].'" value="'.$page['page_title'].'"></div>
+						</div>
+
 						<div class="features_one">
 								<div class="features_one_label">Кейвордс</div>
 								<div class="features_one_input"><input class="page_field" type="text" name="meta_keywords" id="meta_keywords__'.$page['id'].'" value="'.$page['meta_keywords'].'"></div>
-							</div>
+						</div>
+
 						<div class="features_one non_boder_features_one">
 								<div class="features_one_label ">Дескрипшен</div>
 								<div class="features_one_input"><textarea class="page_field"   name="meta_description" id="meta_description__'.$page['id'].'"  >'.$page['meta_description'].'</textarea></div>
-							</div>
+						</div>
 						'.(($page['uri'] == '/') ? '
 				 		<div class="absolute_left">
 							<div class="features_one non_boder_features_one">
@@ -108,6 +138,7 @@ class OnePage extends CWidget
 				</div>
 				' : '').'							
 		';
+		return $body;
 	}
 	
 	

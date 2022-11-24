@@ -130,7 +130,8 @@ class SendToMail {
 		 		'stop'=>0,
 		 		'text'=>'Новый Заказ №'.$ARRfield['id'].'! '.$ARRfield['table_product_mob'].'; '.$ARRfield['to_name'].', тел:'.$ARRfield['to_phone'].'',
 		 );
-		
+
+
 		$body = '<body style="color:#333333; font-family:arial; font-size:14px;">
 							<h1 style="color:#78c028;">Флау-вил</h1>
 							<p style="width:50%; margin:10px 0; height:1px; background-color:#999999"></p>
@@ -138,9 +139,14 @@ class SendToMail {
 							<br><br>								
 							<h5>Отправитель</h5>		
 							
-								Имя:  <b>'.$ARRfield['to_name'].'</b>
+								Имя заказчика:  <b>'.$ARRfield['to_name'].'</b>
 								<br>
-								тел.:  <b>'.$ARRfield['to_phone'].'</b>		
+								Имя получателя:  <b>'.$ARRfield['from_name'].'</b>
+								<br>
+								Тел. заказчика:  <b>'.$ARRfield['to_phone'].'</b>	
+								<br>	
+								Тел. получателя:  <b>'.$ARRfield['from_phone'].'</b>	
+								<br>	
 								'.$ARRfield['comment'].'
 							<h5>Заказ:</h5>
 								'.$ARRfield['table_product'].'
@@ -170,9 +176,15 @@ class SendToMail {
 							<br><br>
 							<h5>Получатель</h5>										
 							
-							Имя:  <b>'.$ARRfield['to_name'].'</b>
+							Имя заказчика:  <b>'.$ARRfield['to_name'].'</b>
 							<br>
-							тел.:  <b>'.$ARRfield['to_phone'].'</b>		
+							Имя получателя:  <b>'.$ARRfield['from_name'].'</b>
+							<br>
+							Тел. заказчика:  <b>'.$ARRfield['to_phone'].'</b>	
+							<br>	
+							Тел. получателя:  <b>'.$ARRfield['from_phone'].'</b>	
+							<br>	
+							'.$ARRfield['comment'].'	
 
 							<h5>Ваш заказ:</h5>
 							
@@ -306,10 +318,17 @@ class SendToMail {
 				}
 			}
 		}
+
+
 		$ARRfield['id'] = $order['id'];
 		$ARRfield['to_name'] = $order['to_name'];
+		$ARRfield['from_name'] = $order['from_name'];
 		$ARRfield['price'] = $order['price'];
 		$ARRfield['to_phone'] = $order['to_phone'];
+		$ARRfield['from_phone'] = $order['from_phone'];
+		$ARRfield['budget'] = $order['budget'];
+		$ARRfield['color_gamma'] = $order['color_gamma'];
+		$ARRfield['sostav_buketa'] = $order['sostav_buketa'];
 		$ARRfield['products_id'] = $order['products_id'];
 		$ARRfield['comment'] = $order['comment'];
 		$ARRfield['table_product_mob'] = $line_prod_mob;
@@ -322,7 +341,7 @@ class SendToMail {
 		';
 		
 		$this->AddEmailClass();
-		//$this->SendOrdertoUser($ARRfield);
+		$this->SendOrdertoUser($ARRfield);
 		$this->SendOrdertoAdmin($ARRfield);
 		$this->SendTg($order, $products);
 	}
@@ -347,13 +366,16 @@ class SendToMail {
 		}
 		
 		$content = 'Заказ №: '. $order['id']. PHP_EOL;
-		$content .= 'Имя: '.$order['to_name']. PHP_EOL;
-		$content .= 'Телефон: '.$order['to_phone']. PHP_EOL;
-		$content .= 'Сумма: '.number_format($order['price'], 0, ',', ' ' ).' р'. PHP_EOL;
+		$content .= 'Имя заказчика: '.$order['to_name']. PHP_EOL;
+		$content .= 'Имя получателя: '.$order['from_name']. PHP_EOL;
+		$content .= 'Телефон заказчика: '.$order['to_phone']. PHP_EOL;
+		$content .= 'Телефон получателя: '.$order['from_phone']. PHP_EOL;
+		// $content .= 'Сумма: '.number_format($order['price'], 0, ',', ' ' ).' р'. PHP_EOL;
 		$content .= str_replace('<br>',PHP_EOL,$order['comment']);
-		$content .= 'Состав: '. PHP_EOL;
+		// $content .= 'Состав: '. PHP_EOL;
 		
 		$chat_id = '-1001207810416';
+		
 		require 'vendor/autoload.php';
 		$token = '1436034056:AAFyrdOTVhvNhWxnG1IXtPjeKKNAnQVd_ag';
 		$telegram = new Telegram\Bot\Api($token);
@@ -361,7 +383,8 @@ class SendToMail {
 		$res = $telegram->sendMessage(
 			$chat_id,//'chat_id'
 			$content,//'text'
-			true//disable_web_page_preview
+			true//disable_web_page_preview,
+			
 		);
 		
 		$messageId = $res->getMessageId();
@@ -389,5 +412,34 @@ class SendToMail {
 				);
 			}
 		}
+	}
+	public function SendTgQuickForm($order, $comment) {
+		
+		$content = 'Заказ на сборку букета №и' . $order['id'] . PHP_EOL;
+		$content .= 'Бюджет: '. $order['budget']. ' р.' . PHP_EOL;
+		$content .= 'Цветовая гамма: '. $order['color_gamma']. PHP_EOL;
+		$content .= 'Состав букета: '. $order['sostav_buketa']. PHP_EOL;
+		$content .= $comment;
+		$content .= 'Имя заказчика: '.$order['to_name']. PHP_EOL;
+		$content .= 'Имя получателя: '.$order['from_name']. PHP_EOL;
+		$content .= 'Телефон заказчика: '.$order['to_phone']. PHP_EOL;
+		$content .= 'Телефон получателя: '.$order['from_phone']. PHP_EOL;
+		
+		$chat_id = '-1001207810416';
+		// $chat_id = '837067604';
+		require 'vendor/autoload.php';
+		$token = '1436034056:AAFyrdOTVhvNhWxnG1IXtPjeKKNAnQVd_ag';
+		// $token = '5468563351:AAGAhaN1YDz5NaxP6zJcmlbYhcusrA0XbwM';
+		$telegram = new Telegram\Bot\Api($token);
+		
+		$res = $telegram->sendMessage(
+			$chat_id,
+			$content,
+			true
+		);
+		
+		$messageId = $res->getMessageId();
+		
+		
 	}
 }

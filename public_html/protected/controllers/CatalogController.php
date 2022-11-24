@@ -8,11 +8,8 @@ class CatalogController extends Controller
 	public function actionIndex($uri = '', $id= '')
 	{
 		
-		
-		
 		$db = Yii::app()->db;
 		if($id == ''){
-
 			if ($uri != ''){
 			
 				$sql = 'SELECT c.*, f.name as feature_name, f.variants as feature_variants FROM categories c LEFT JOIN features_category fc ON fc.cat_id = c.id LEFT JOIN features f ON fc.feature_id = f.id  WHERE  f.type="multiselect" AND f.visibly = 1 AND fc.visibly = 1 AND c.hidden = 0 AND c.uri = "'.$uri.'" GROUP by c.id ORDER by f.id ASC';//AND  c.visibly = 1 
@@ -20,7 +17,7 @@ class CatalogController extends Controller
 	 	
 				$sql = 'SELECT *  FROM categories WHERE  uri = "'.$uri.'" GROUP by id';//  visibly = 1 AND
 	 			$C = $db->createCommand($sql)->queryRow();
-	 			$label = $C['name'];
+	 			$label = $C['page_title'] ? $C['page_title'] : $C['name'];
 	 			if ($label == '')
 	 				throw new CHttpException(404,'Ой, такой страницы нет');
 	 			
@@ -36,8 +33,9 @@ class CatalogController extends Controller
 				$this->pageTitle=$label.'';
 				$category = array('feature_variants' => '');
 				$C = array('label_description' => '', 'description' => '');
+				$category = false;
 			}
-			
+
 			$p = new CHtmlPurifier;
 			
 			$GetPice = '';
@@ -87,6 +85,7 @@ class CatalogController extends Controller
 				
 			}
 			$ProductsToNew = array();
+			$features = [];
 			foreach ($ProductsTo as $product) {
 				$ProductsToNew[$product['product_id']] = $product;
 				if (!empty($product['feature_value'])) {
@@ -98,7 +97,9 @@ class CatalogController extends Controller
 					}
 				}
 			}
-			$category['feature_variants'] = implode('|', $features);
+
+			if ($category)
+				$category['feature_variants'] = implode('|', $features);
 			
 			$productsTo = array();
 			$i = 0;
@@ -138,12 +139,31 @@ class CatalogController extends Controller
 				ksort($priceRanges);
 			}
 			$products = $productsTo;
+
+
+			$sql = 'SELECT t1.price_id, t1.product_id, t2.id, t2.season, t2.order FROM products_prices t1 INNER JOIN prices t2 ON t1.price_id = t2.id';
+
+			$products_prices = $db->createCommand($sql)->queryAll();
+
+
+			$prod_season_ids = [];
+			$prod_order_ids = [];
+			foreach($products_prices as $key => $item_price){
+				if($item_price['season']){
+					$prod_season_ids[] = $item_price['product_id'];
+				}
+				if($item_price['order']){
+					$prod_order_ids[] = $item_price['product_id'];
+				}
+			}
+
 			
  			if(Yii::app()->request->isPostRequest)
  				$this->renderPartial('items_line', array(
  						'products' => $products,
  						'pages'=>$pages,
- 						
+						'prod_season_ids' => $prod_season_ids,
+						'prod_order_ids' => $prod_order_ids
  				));
  			else {
 				$this->render('index', array(
@@ -154,7 +174,9 @@ class CatalogController extends Controller
 						'categories'=> $categories,
 						'label' => $label,
 						'C' => $C,
-						'priceRanges' => $priceRanges
+						'priceRanges' => $priceRanges,
+						'prod_season_ids' => $prod_season_ids,
+						'prod_order_ids' => $prod_order_ids
 				));
  			}
 		
@@ -292,7 +314,11 @@ class CatalogController extends Controller
 				$product['others'] = $db->createCommand($sql)->queryAll();
 			} else
 				$product['others'] = array();
-			
+
+			/* product_prices */	
+			$sql = 'SELECT t1.price_id, t1.quantity, t2.name, t2.height, t2.country, t2.title FROM products_prices t1 INNER JOIN prices t2 ON t1.price_id = t2.id WHERE product_id = '.$product['id'].'';
+
+			$product['prices'] = $db->createCommand($sql)->queryAll();
 				
 			if(Yii::app()->request->isPostRequest){
 				$this->renderPartial('view', array(
@@ -327,7 +353,6 @@ class CatalogController extends Controller
  				WHERE p.id = '.$id.' AND p.visibly = 1';
 			
 		$product = $db->createCommand($sql)->queryRow();
-		
 		
 		$fid = 0;
 		if(isset($_GET['fid'])){
@@ -372,6 +397,8 @@ class CatalogController extends Controller
 				
 			}
 		}
+
+		
 		if (!$checkProduct){
 			$ARR_products[] = $product['id'].':'.$FPrice.':'.$count.':'.$fid;
 		}
@@ -410,12 +437,20 @@ class CatalogController extends Controller
 		$ARR_products = explode('|', $cart);
 		
 		$ARR_products = array_diff($ARR_products, array(''));
-		
+		$del_all_item_line = isset($_GET['all']) && $_GET['all'] == 'true' ? true : false;
+
 		foreach($ARR_products as $K => $V){
 			$Arrone = explode(':', $V);
-			if ($Arrone[0] == $id && !$check){
+			if ($Arrone[0] == $id && !$check && $Arrone[2] == 1 ){
 				unset($ARR_products[$K]);
 				$check = true;
+			}elseif($Arrone[0] == $id && $del_all_item_line){
+				unset($ARR_products[$K]);	
+				$check = true;
+			}elseif($Arrone[0] == $id && (int)$Arrone[2] > 1){
+				$Arrone[2] = (int)$Arrone[2] - 1;
+				$ARR_products[$K] = implode(':', $Arrone);
+				$check = false;
 			}
 				
 		}
@@ -424,7 +459,7 @@ class CatalogController extends Controller
 			
 			echo CJSON::encode(array(
 					'error' => 0,
-					
+					'check' => $check
 			));
 		}else {
 			$this->redirect(Yii::app()->request->urlReferrer);
@@ -457,7 +492,11 @@ class CatalogController extends Controller
 	
 
 	
+public function actionFormorder(){
+	$form=new FormOrder;
+	
+	$this->render('formorder',array('user'=>$form));
+}
 	
 	
 }
-

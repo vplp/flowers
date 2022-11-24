@@ -59,7 +59,6 @@ class Formats {
 		Yii::app()->request->cookies['sort'] = new CHttpCookie('sort', CJSON::encode($array));
 	}
 	
-	
 	public static function getCountItems($count)
 	{
 		
@@ -202,5 +201,7 @@ class Formats {
 		} else $end='й';
 		return $end;
 	}
+
+	
 	
 }

@@ -11,17 +11,31 @@ class ProductsController extends Controller
 	public function actionList($id = '') {
 		if (!Yii::app()->user->getState('auth')) $this->redirect('/',array());
 		
+		$products = $this->module->GetAllProducts();
+		
+			foreach ($products as $key => $value) {
+				$feature_price_arr = $this->module->GetProductFeaturePrice($value['id']);
+				$feature_price = 9999999;
+
+				foreach($feature_price_arr['feature_price']['prices'] as $price){
+					if(isset($price['price']) && $price['price'] < $feature_price) $feature_price = $price['price'];
+				}
+				if($feature_price == 9999999) $feature_price = $value['price'];
+				$products[$key]['feature_price'] = $feature_price;
+
+			}
+
 		if ($id == ''){
 			$this->render('list',array(
-			 		'ARRitems' => $this->module->GetAllProducts(),
+			 		'ARRitems' => $products,
 			 		'ARRcat' =>$this->module->GetAllCategories(),
 					'ARRaction' => $this->module->GetAllActions(),
 					'Catalog' => $this->module->GetSectionsWithCategory(),
 					'id' => $id
-						
 			 	)
 			 );
 		} else {
+
 			$this->render('list',array(
 					'ARRitems' => $this->module->GetCategoryWhithAllProducts($id),
 					'ARRcat' =>$this->module->GetAllCategories(),

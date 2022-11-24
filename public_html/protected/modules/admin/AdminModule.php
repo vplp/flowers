@@ -45,18 +45,37 @@ class AdminModule extends CWebModule
 		foreach($ARR['features_products'] as $K => $f){
 			if ($f['price'] == 1){
 				$variants = explode('|', $f['variants']);
+
 				$ARR['feature_price'] = $f;
+
 				unset($ARR['features_products'][$K]);
 				foreach($variants as $K2 => $V) {
+
 					$ARR['feature_price']['prices'][] = Yii::app()->db->createCommand()
 					->select('t1.value, t1.price')
 					->from('feature_product_price as t1')
 					->where('t1.product_id = '.$ARR['id'].' AND t1.feature_id = '.$f['feature_id'].' AND t1.value = "'.$V.'"')
 					->queryRow();
-				}
 				
+
+				}
 			}
 		}
+
+
+		if(!in_array(true, $ARR['feature_price']['prices'])){
+			$prod_price = Yii::app()->db->createCommand()
+					->select('t1.price')
+					->from('feature_product_price as t1')
+					->where('t1.product_id = '.$ARR['id'])
+					->queryRow();
+
+			$ARR['feature_price']['prices'][0] = array(
+						"value"=> '',
+						"price"=> $prod_price['price']
+					);
+		}
+
 		
 		$action_products = Yii::app()->db->createCommand()
 		->select('t1.value, t1.name, t1.type , t2.*')
@@ -102,9 +121,58 @@ class AdminModule extends CWebModule
 		->from('others_products as t1')
 		->where('t1.prod_id = '.$ARR['id'].'')
 		->queryrow();
+
+		
 		
 		
 // 		/$this->pre($ARR);
+		return $ARR;
+	}
+
+
+
+	public function GetProductFeaturePrice($prod_id) {
+		$ARR = Yii::app()->db->createCommand()
+		->select('t1.*')
+		->from('products AS t1')
+		->where('t1.id = '.$prod_id.'')
+		->queryRow();
+
+		$ARR['features_products'] = Yii::app()->db->createCommand()
+		->select('t1.variants, t1.admin, t1.price, t1.name, t1.type , t2.*')
+		->from('features as t1,features_products AS t2')
+		->where('t2.product_id = '.$ARR['id'].' AND t2.feature_id = t1.id AND t2.visibly = 1 AND t1.visibly = 1 GROUP by t1.id order by t1.id desc')
+		->queryALL();
+
+		foreach($ARR['features_products'] as $K => $f){
+			if ($f['price'] == 1){
+				$variants = explode('|', $f['variants']);
+				$ARR['feature_price'] = $f;
+				unset($ARR['features_products'][$K]);
+				foreach($variants as $K2 => $V) {
+					$ARR['feature_price']['prices'][] = Yii::app()->db->createCommand()
+					->select('t1.value, t1.price')
+					->from('feature_product_price as t1')
+					->where('t1.product_id = '.$ARR['id'].' AND t1.feature_id = '.$f['feature_id'].' AND t1.value = "'.$V.'"')
+					->queryRow();
+				}
+				
+			}
+		}
+
+		if(!in_array(true, $ARR['feature_price']['prices'])){
+			$prod_price = Yii::app()->db->createCommand()
+					->select('t1.price')
+					->from('feature_product_price as t1')
+					->where('t1.product_id = '.$ARR['id'])
+					->queryRow();
+
+			$ARR['feature_price']['prices'][0] = array(
+						"value"=> '',
+						"price"=> $prod_price['price']
+					);
+		}
+
 		return $ARR;
 	}
 	
@@ -127,6 +195,18 @@ class AdminModule extends CWebModule
 			 	$category_list[] = $V['name'];
 			 }
 			 $ARR[$k]['categories_list'] = implode(', ', $category_list);
+		}
+		
+		foreach ($ARR as $key => $value) {
+			$feature_price_arr = $this->GetProductFeaturePrice($value['id']);
+			$feature_price = 9999999;
+
+			foreach($feature_price_arr['feature_price']['prices'] as $price){
+				if(isset($price['price']) && $price['price'] < $feature_price) $feature_price = $price['price'];
+			}
+			if($feature_price == 9999999) $feature_price = $value['price'];
+			$ARR[$key]['feature_price'] = $feature_price;
+
 		}
 	
 		return $ARR;
@@ -416,6 +496,17 @@ class AdminModule extends CWebModule
 	
 		return $ARR;
 	}
+
+	public function GetDeliveryRegions() {
+	
+		$ARR = Yii::app()->db->createCommand()
+		->select('*')
+		->from('delivery_regions')
+		->where('id != "" order by orders ASC')
+		->queryALL();
+	
+		return $ARR;
+	}
 	
 	public function GetOrderWithAll($id) {
 	
@@ -519,8 +610,21 @@ class AdminModule extends CWebModule
 	}
 
 	public function GetAllPrices() {
-		$sql = 'SELECT * FROM prices';
+//		$sql = 'SELECT * FROM prices ORDER BY orders ASC';
+		$sql = 'SELECT * FROM `prices` ORDER BY `name` ASC, `country` ASC, `height` ASC';
 		$ARR = Yii::app()->db->createCommand($sql)->queryALL();
+
+// [id] => 74
+// [country] => Р РѕСЃСЃРёСЏ
+// [name] => Р РѕР·Р°
+// [title] =>
+// [height] => 60 cРј
+// [cost] => 110
+// [season] => 0
+// [order] => 0
+// [orders] => 0
+// )
+
 		return $ARR;
 	}
 

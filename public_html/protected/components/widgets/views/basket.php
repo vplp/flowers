@@ -38,7 +38,10 @@
 				</div>
 				<div class="basket_order ">
 					<a style="display:block;" class="buy_order green_btn" data-nav="next">Заказать...</a>
-					<div class="basket_order_label">В&nbsp;корзине&nbsp;<?php echo $all_count?>&nbsp;<?php echo Formats::getCountProducts($all_count)?> на&nbsp;сумму&nbsp;<span><?php echo str_replace(' ', '&nbsp;', number_format( $all_price, 0, ',', ' ' ));?>&nbsp;рублей</span></div>
+					<div class="basket_order_label">
+					В&nbsp;корзине&nbsp;<?php echo $all_count?>&nbsp;<?php echo Formats::getCountProducts($all_count)?> на&nbsp;сумму&nbsp;
+					<span><?php echo str_replace(' ', '&nbsp;', number_format( $all_price, 0, ',', ' ' ));?>&nbsp;рублей</span>
+					</div>
 				</div>
 				<a href="/catalog/delall" title="Очистить корзину" class="basket_clear"><span>Очистить корзину</span><b class="del">×</b></a>
 				<div class="br"></div>

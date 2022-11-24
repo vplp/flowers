@@ -42,13 +42,18 @@ class Basket extends CWidget
 			}
 		}
 		
-		$this->render('basket', array(
+		// $this->render('basket', array(
+		// 		'products' => $products,
+		// 		'aloading' => $this->aloading,
+		// ));
+
+		$this->render('basket_mini', array(
 				'products' => $products,
-				'aloading' => $this->aloading,
 		));
 		
 		
 	}
+	
 	
 	
 }

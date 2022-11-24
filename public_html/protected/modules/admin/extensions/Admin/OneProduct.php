@@ -53,8 +53,13 @@ class OneProduct extends CWidget
 						<div class="features_one_label">Название</div>
 						<div class="features_one_input"><input class="product_field" maxlength="40" type="text" name="name" id="name__'.$product['id'].'" '.((isset($_GET['new']) && $_GET['new'] = '1') ? 'placeholder' : 'value').'="'.$product['name'].'"></div>
 				</div>
+				
+				<div class="block_label" style="margin-top:40px;">Изображения товара</div><input id="add_img_input" multiple="multiple " class="input_selected_click" type="file" style="display:none;" >
+				'.$this->renderProductImages($product['img'], 'product_img_block').'
+				<br>
+				
 				'.((isset($product['feature_price']))? '
-					<div class="features_one">
+					<div class="features_one" style="margin-top: 100px;">
 						<div class="features_one_label">Цена, рублей &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.$product['feature_price']['name'].'</div>
 						<div class="features_one_input feature_product_price" id="feature_price__'.$product['feature_price']['feature_id'].'" >'.$this->FeatureVariantsPrice($product).'</div>
 					</div>		
@@ -69,7 +74,7 @@ class OneProduct extends CWidget
 
 				'.((isset($product['prices']))? '
 					<div class="features_one">
-						<div class="features_one_label">Кол-во &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Наименование</div>
+						<div class="features_one_label">Наименование &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Кол-во</div>
 						<div class="features_one_input products_prices" id="products_prices__price_id">'.$this->ProductPrices($product, $prices).'</div>
 					</div>		
 						
@@ -80,6 +85,13 @@ class OneProduct extends CWidget
 					</div>	
 						
 				').'
+				
+				<div class="features_one">
+					<div class="features_one_label">Услуги флориста</div>
+					<div class="features_one_input">
+						<input class="product_field" type="text" id="florist_services_price__'.$product['id'].'" name="florist_services" value="'.$product['florist_services_price'].'">
+					</div>
+				</div>
 				
 				<div class="features_one">
 						<div class="features_one_label">Категория</div>
@@ -97,12 +109,20 @@ class OneProduct extends CWidget
 					<div class="features_one_label">Сортировка (по возрастанию)</div>
 					<div class="features_one_input"><input class="product_field" maxlength="40" type="text" name="orders" id="orders__'.$product['id'].'" '.((isset($_GET['new']) && $_GET['new'] = '1') ? 'placeholder' : 'value').'="'.$product['orders'].'"></div>
 				</div>
+
+				<!--<div class="features_one">
+						<div class="features_one_label">Услуги флориста</div>
+						<div class="features_one_input">
+							<input class="product_field" type="text" id="florist_services_price__'.$product['id'].'" name="florist_services" value="'.$product['florist_services_price'].'">
+						</div>
+				</div>
 						
 				<div class="br"></div>
 				<div class="block_label" style="margin-top:60px;">Изображения товара</div><input id="add_img_input" multiple="multiple " class="input_selected_click" type="file" style="display:none;" >
 				'.$this->renderProductImages($product['img'], 'product_img_block').'
 				<div class="br"></div>
 				<div class="block_label">C этим товаром покупают</div>
+				-->
 				
 				'.$this->RenderOthersProducts($product['others_products'], 'product_img_block').'
 				<div class="br"></div>
@@ -144,8 +164,8 @@ class OneProduct extends CWidget
 			foreach($product['prices'] as $_price) {
 				$line .= '
 					<div class="feature_one_price row_product_price">
-	 					<input type="text" class="w120 feature_price" value="'.$_price['quantity'].'">
 	 					<select class="w120 feature_price_value" data-placeholder=" " >'.$this->PriceOptionsSelect($prices, $_price['price_id']).'</select>
+						 <input type="text" class="w120 feature_price" value="'.$_price['quantity'].'">
 	 					<div class="del"><img src="/images/del.png"></div>
 	 				</div>		
 				';
@@ -155,14 +175,14 @@ class OneProduct extends CWidget
 		return '
 			'.(($line != '') ? $line : '
 				<div class="feature_one_price row_product_price">
-				<input type="text" class="w120 feature_price" '.((isset($_GET['new']) && $_GET['new'] = '1') ? 'placeholder' : 'value').'="'.(($line == '') ? 0 : '').'">
 				<select class="w120 feature_price_value"  data-placeholder=" " >'.$this->PriceOptionsSelect($prices, 0).'</select>
+				<input type="text" class="w120 feature_price" '.((isset($_GET['new']) && $_GET['new'] = '1') ? 'placeholder' : 'value').'="'.(($line == '') ? 0 : '').'">
 				<div class="del"><img src="/images/del.png"></div>
 				</div>		
 			').'
 			<div class="product_price tmp row_product_price">
-				<input type="text" class="w120 feature_price" value="">
 				<select class="w120 feature_price_value"  data-placeholder=" " >'.$this->PriceOptionsSelect($prices, 0).'</select>
+				<input type="text" class="w120 feature_price" value="">
 				<div class="del"><img src="/images/del.png"></div>
 			</div>
 			<div class="feature_one_price border" id="add_product_price"></div>
@@ -176,10 +196,10 @@ class OneProduct extends CWidget
 		$Arrvar = explode('|', $feature['variants']);
 		$line = '';
 		foreach($feature['prices'] as $V) {
-			if (isset($V['price']) && isset($V['value'])){
+			if (isset($V['price'])){
 				$line .= '
 					<div class="feature_one_price row_feature_one_price">
-	 					<input type="text" class="w120 feature_price" value="'.number_format($V['price'], 0, ',', ' ' ).'">
+						<input type="text" class="my w120 feature_price" value="'.number_format($V['price'], 0, ',', ' ' ).'">
 	 					<select class="w120 feature_price_value" data-placeholder=" " >'.$this->FeaturePriceOptionsSelect($Arrvar, $V['value']).'</select>
 	 					<div class="del"><img src="/images/del.png"></div>
 	 				</div>		
@@ -190,13 +210,13 @@ class OneProduct extends CWidget
  		return '
  				'.(($line != '') ? $line : '
  					<div class="feature_one_price row_feature_one_price">
- 					<input type="text" class="w120 feature_price" '.((isset($_GET['new']) && $_GET['new'] = '1') ? 'placeholder' : 'value').'="'.(($line == '') ? $product['price'] : '').'">
+					 <input type="text" class="w120 feature_price" '.((isset($_GET['new']) && $_GET['new'] = '1') ? 'placeholder' : 'value').'="'.(($line == '') ? $product['price'] : '').'">
  					<select class="w120 feature_price_value"  data-placeholder=" " >'.$this->FeaturePriceOptionsSelect($Arrvar, '').'</select>
  					<div class="del"><img src="/images/del.png"></div>
  					</div>		
  				').'
  				<div class="feature_one_price tmp row_feature_one_price">
- 					<input type="text" class="w120 feature_price" value="">
+				 	<input type="text" class="w120 feature_price" value="">
  					<select class="w120 feature_price_value"  data-placeholder=" " >'.$this->FeaturePriceOptionsSelect($Arrvar, '').'</select>
  					<div class="del"><img src="/images/del.png"></div>
  				</div>
@@ -212,13 +232,13 @@ class OneProduct extends CWidget
 			$option .= '<option '.(($var == $value)? 'selected="selected"' : '' ).' value="'.$var.'">'.$var.'</option>';
 		}
 		
-		return '<option value=""> </option>'.$option;
+		return '<option value="">Не выбрано</option>'.$option;
 	}
 
 	public function PriceOptionsSelect($prices, $price_id) {
 		$option = '';
 		foreach($prices as $price) {
-			$name = $price['name'] . ' ' . $price['height'] .  ' ' . $price['country'];
+			$name = $price['name'] . ' ' . $price['height'] .  ' ' . $price['country'] . ' ' . $price['title'];
 			$option .= '<option '.(($price['id'] == $price_id)? 'selected="selected"' : '' ).' value="'.$price['id'].'">'.$name.'</option>';
 		}
 		return '<option value=""> </option>'.$option;
@@ -304,19 +324,18 @@ class OneProduct extends CWidget
 							$feature_input .= ''.$this->getToRadioInput( explode('|', $feature['variants']), explode('|', $feature['value']), $ID.'_'.$feature['id'].'').'';
 						
 						}
-					
-					
-					$line_features .= '
+
+						if ($feature['name'] != 'Состав') {
+                            $line_features .= '
 							'.(($feature['type'] == 'textarea') ? '<div class="absolute_left">' : '').'
 								<div class="features_one '.(($i == $count) ? 'non_boder_features_one' : '').'">
 									<div class="features_one_label">'.$feature['name'].'</div>
 									<div class="features_one_input one_feature_category">'.$feature_input.'</div>
 								</div>
 							'.(($feature['type'] == 'textarea') ? '</div>' : '').'
-						
-				
 						';
-		
+                        }
+
 			$i++;
 			}
 		}
@@ -355,7 +374,7 @@ class OneProduct extends CWidget
 		
 					}
 				}
-					
+
 				$line_features .= '
 							<div class="features_one '.(($i == $count) ? 'non_boder_features_one' : '').'">
 								<div class="features_one_label">'.$feature['name'].'</div>

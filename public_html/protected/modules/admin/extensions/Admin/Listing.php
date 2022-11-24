@@ -27,13 +27,19 @@ class Listing extends CWidget
 	public function run() {
 		echo '<div class="listing">';
 		echo '<div class="count_all_listing"><span>'.$this->getCount(count($this->ARRitems), $this->count_labels).'</span></div>';
-		if ($this->new_label != '')
+		if ($this->new_label != ''){
 			echo '<div class="add_new"><a class="green_btn btn_def2" href="/admin/'.$this->id_table.'/new">'.$this->new_label.'</a></div>';
+		// echo '<a href="/admin/'.$this->id_table.'/new" class="green_btn btn_def2">'.$this->new_label.'</a><br><br>';
+		}elseif($this->id_table == 'prices'){
+			echo '<a href="/admin/prices/new/" class="green_btn btn_def2">Добавить цену</a><br><br>';
+		}	
 		echo $this->RenderRow();
 		echo '</div>';
 	}
 	
 	public function RenderRow() {
+
+		
 	
 		if (count($this->ARRitems) > 0) {
 			$header_line = '';
@@ -57,17 +63,26 @@ class Listing extends CWidget
 					
 					if (isset($field['style'])) $style_td = $field['style']; else  $style_td = '';
 					
-					
-					if ($field['name'] == 'name' && $this->id_table == 'banners' &&  $item[$field['name']]  == '') $item[$field['name']] = 'Баннер номер '.$item['id'];
+					if ($field['name'] == 'name' && $this->id_table == 'banners' &&  $item[$field['name']]  == '') 
+						$item[$field['name']] = 'Баннер номер '.$item['id'];
+
+					if ($field['name'] == 'name' && $this->id_table == 'prices') 
+						$item[$field['name']] .= ' ' . $item['title'];
 					
 					if ($field['name'] == 'img'){
 						$ARR_img = explode('|', $item[$field['name']]);
 						$ARR_img = array_diff($ARR_img, array(''));
 						
 						$td_line .= '<td style="'.$style_td.'" class="th'.$k.' image_td" id="'.$this->id_table.'_'.$item['id'].'_'.$field['name'].'"><a class="non" href="/admin/'.$this->id_table.'/edit/'.$item['id'].'"><img width="36" height="36" src="/uploads/81x84'.current($ARR_img).'"</a></td>';
-					} else if ($field['name'] == 'price'){
-						$td_line .= '<td style="'.$style_td.'" class="th'.$k.' price_td" id="'.$this->id_table.'_'.$item['id'].'_'.$field['name'].'"><input id="'.$this->id_table.'_'.$item['id'].'_price" type="text name="price" class="listing_price_edit" value="'.number_format($item[$field['name']], 0, ',', ' ' ).'"> рублей</td>';
-					} else if ($field['name'] == 'cost'){
+					} 
+					else if ($field['name'] == 'price'){
+						$product_price = $item['price_update'] > 0 ? number_format(($item[$field['name']]), 0, ',', ' ' ) : 0; 
+						$td_line .= '<td style="'.$style_td.'" class="th'.$k.' price_td" id="'.$this->id_table.'_'.$item['id'].'_'.$field['name'].'">'.$product_price.' рублей</td>';
+					} 
+					else if ($field['name'] == 'feature_price'){
+						$td_line .= '<td style="'.$style_td.'" class="th'.$k.' price_td" id="'.$this->id_table.'_'.$item['id'].'_'.$field['name'].'">'.$item[$field['name']].' рублей</td>';
+					} 
+					else if ($field['name'] == 'cost'){
 						$td_line .= '<td style="'.$style_td.'" class="th'.$k.' cost_td" id="'.$this->id_table.'_'.$item['id'].'_'.$field['name'].'"><input id="'.$this->id_table.'_'.$item['id'].'_cost" type="text name="cost" class="listing_cost_edit" value="'.number_format($item[$field['name']], 0, ',', ' ' ).'"> рублей</td>';
 					
 					} else {
@@ -86,7 +101,7 @@ class Listing extends CWidget
 						} else {
 
 							if (in_array($field['name'], ['paid', 'season', 'order'])) {
-								$td_line .= '<td style="'.$style_td.'" class="th'.$k.'" id="'.$this->id_table.'_'.$item['id'].'_'.$field['name'].'">'.(($item[$field['name']] == 1) ? 'Да' : 'Нет').'</td>';
+								$td_line .= '<td style="'.$style_td.'" class="th'.$k.'" id="'.$this->id_table.'_'.$item['id'].'_'.$field['name'].'"><input class="'.$this->id_table.'_'.$field['name']. (($item[$field['name']] == 1) ? ' active' : '').'" name="'.$this->id_table.'_'.$item['id'].'_'.$field['name'].'" type="checkbox" '.(($item[$field['name']] == 1) ? 'checked' : '').'/></td>';
 							} else {
 								$td_line .= '<td style="'.$style_td.'" class="th'.$k.'" id="'.$this->id_table.'_'.$item['id'].'_'.$field['name'].'">'.$item[$field['name']].' '.(($this->id_table == 'actions' && $field['name'] == 'value') ? '%' : '').'</td>';
 							}
@@ -154,6 +169,7 @@ class Listing extends CWidget
 											$(this).remove();			
 										})
 									})
+
 									$(".panel_td .panel_hot").click(function(){
 										if ($(this).hasClass("active")) {
 												var ArrId = $(this).attr("id").split("_");	
@@ -177,6 +193,39 @@ class Listing extends CWidget
 												$(this).addClass("active");
 										}
 									})	
+
+									$(".prices_season").change(function(){
+										pricesCheckboxes($(this), "season");
+									});
+									
+									$(".prices_order").change(function(){
+										pricesCheckboxes($(this), "order");
+									});
+
+									function pricesCheckboxes(elem, action){
+
+										if ($(elem).hasClass("active")) {
+											var ArrId = $(elem).attr("name").split("_");	
+											$.ajax({
+												  url: "/admin/update",
+												  type: "POST",
+												  data: "stat=editfield&field=" + action + "&value=0&id="+ArrId[1]+"&f="+ArrId[0],
+												  success: function(data){
+												  }
+											});
+											$(elem).removeClass("active");
+										} else {
+											var ArrId = $(elem).attr("name").split("_");	
+											$.ajax({
+												  url: "/admin/update",
+												  type: "POST",
+												  data: "stat=editfield&field=" + action + "&value=1&id="+ArrId[1]+"&f="+ArrId[0],
+												  success: function(data){
+												  }
+											});
+											$(elem).addClass("active");
+										}
+									}
 										
 									$(".listing_price_edit").change(function(){
 										var val = $(this).val();

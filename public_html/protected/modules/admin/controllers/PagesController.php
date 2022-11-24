@@ -44,9 +44,11 @@ class PagesController extends Controller
 		if (!Yii::app()->user->getState('auth')) $this->redirect('/',array());
 				
 			$ARRpage= $this->module->GetPageWithAll($id);
+			$ARRregions= $this->module->GetDeliveryRegions();
 		
 			$this->render('edit',array(
 					'ARRpage' => $ARRpage,
+					'ARRregions' => $ARRregions
 				)
 			);
 	}

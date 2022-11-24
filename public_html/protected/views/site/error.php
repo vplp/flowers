@@ -1,5 +1,8 @@
 <style>
-.any_bield { position: absolute; margin:0 !important;}
+.any_bield { 
+	/* position: absolute;  */
+	margin:0 !important;
+	}
 </style>
 <?php
 /* @var $this SiteController */

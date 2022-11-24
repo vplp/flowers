@@ -1,5 +1,8 @@
 <style>
-.any_bield { position: absolute; margin:0 !important;}
+.any_bield { 
+	/* position: absolute;  */
+	margin:0 !important;
+	}
 </style>
 
 <?php if (0) : ?>
@@ -195,23 +198,23 @@
 </script>
 
 <div class="wrap_sizes ">
-<h1><?php echo $page['name']?></h1>
+<h1><?php echo $page['page_title']?></h1>
 <p>Наш магазин находится по адресу: город Кинель​​​​​, <a class="fakeLink" href="#map">улица Орджоникидзе, дом 76</a>.</p>
 <p>В наличии всегда широкий ассортимент свежих цветов. Приезжайте и выберите букет с витрины или закажите с доставкой.</p>
 
 <?php $this->widget('widget.Alert')->get(); ?>
 
 <br>
-	 <!-- <div class="wrap_block resize_block fixed_height  <?if (isset($class)) echo $class;?>  a_load_block">
+	 <!-- <div class="wrap_block resize_block fixed_height  <? //if (isset($class)) echo $class;?>  a_load_block">
 		
 		<div class="block_label aloading"><h1>Магазин цветов в Кинеле</h1></div>
 			
 			
 			<div id="products_line" class="products_line ">
-				<?php $this->renderPartial('../catalog/items_line', array(
-						'products' => $products,
-						'sort' => false,
-				));	?>
+				<?php //$this->renderPartial('../catalog/items_line', array(
+						//'products' => $products,
+						//'sort' => false,
+				//));	?>
 			</div> 
 			
 		</div>-->
@@ -223,7 +226,7 @@
 				<?php $this->renderPartial('../catalog/items_line', array(
 						'products' => $c['products'],
 						'sort' => false,
-						'catUri' => "/catalog/".$c[uri],
+						'catUri' => "/catalog/".$c['uri'],
 						'page' => 'index',
 						'productsCount' => $c['count']
 				));	?>

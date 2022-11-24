@@ -111,21 +111,21 @@ class OneOrder extends CWidget
  				</div>
 				<div class="features_one">
  						<div class="features_one_label">Имя</div>
- 						<div class="features_one_input"><input style="" type="text" name="order_to_name" id="order_to_name" value="'.(($order['to_from'] == 1 )? $order['from_name'] : $order['to_name']).'" placeholder=""></div>
+ 						<div class="features_one_input"><input style="" type="text" name="order_to_name" id="order_to_name" value="'.(($order['to_from'] == 1 )? $order['from_name'] : $order['from_name']).'" placeholder=""></div>
  				</div>
  				<div class="features_one">
  						<div class="features_one_label">Телефон</div>
- 						<div class="features_one_input"><input style="width:180px" type="text" name="order_to_phone" id="order_to_phone" value="'.(($order['to_from'] == 1 )? $order['from_phone'] : $order['from_name']).'" placeholder=""></div>
+ 						<div class="features_one_input"><input style="width:180px" type="text" name="order_to_phone" id="order_to_phone" value="'.(($order['to_from'] == 1 )? $order['from_phone'] : $order['from_phone']).'" placeholder=""></div>
  				</div>
  				<div class="block_label">Информация об отправителе:</div>
 		 		<div class="br"></div>
  				<div class="features_one">
  						<div class="features_one_label">Имя</div>
- 						<div class="features_one_input"><input style="" type="text" name="order_from_name" id="order_from_name" value="'.$order['from_name'].'" placeholder=""></div>
+ 						<div class="features_one_input"><input style="" type="text" name="order_from_name" id="order_from_name" value="'.$order['to_name'].'" placeholder=""></div>
  				</div>
  				<div class="features_one">
  						<div class="features_one_label">Телефон</div>
- 						<div class="features_one_input"><input style="width:180px" type="text" name="order_from_phone" id="order_from_phone" value="'.$order['from_phone'].'" placeholder=""></div>
+ 						<div class="features_one_input"><input style="width:180px" type="text" name="order_from_phone" id="order_from_phone" value="'.$order['to_phone'].'" placeholder=""></div>
  				</div>
  				<div class="features_one">
  						<div class="features_one_label">Электронная почта</div>

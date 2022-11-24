@@ -107,10 +107,13 @@ class SiteController extends Controller
 	public function actionDelivery()
 	{
 		$db = Yii::app()->db;
-		$sql = 'SELECT * FROM pages WHERE uri = "delivery"';
+		$sql = 'SELECT * FROM pages WHERE uri = "dostavka"';
 		$page= $db->createCommand($sql)->queryRow();
-		
-		$this->render('delivery', array(
+		$this->pageTitle=$page['meta_title'].'';
+		Yii::app()->clientScript->registerMetaTag($page['meta_description'], 'description');
+		Yii::app()->clientScript->registerMetaTag($page['meta_keywords'], 'keywords');
+
+		$this->render('dostavka', array(
 				'page' => $page,
 		));
 	}
@@ -137,13 +140,70 @@ class SiteController extends Controller
 		$sql = 'SELECT * FROM pages WHERE uri = "contacts"';
 		$page= $db->createCommand($sql)->queryRow();
 		
-		$this->pageTitle=$page['meta_title'].'';
+		$this->pageTitle = $page['meta_title'].'';
 		Yii::app()->clientScript->registerMetaTag($page['meta_description'], 'description');
 		Yii::app()->clientScript->registerMetaTag($page['meta_keywords'], 'keywords');
 
 		
 		$this->render('contacts', array(
 				'page' => $page,
+		));
+	}
+
+	public function actionCart(){
+
+ 		$db = Yii::app()->db;
+		$sql = 'SELECT * FROM pages WHERE uri = "cart"';
+		$page= $db->createCommand($sql)->queryRow();
+
+		$sql_dostavka = 'SELECT * FROM delivery_regions WHERE id != "" order by orders ASC';
+		$page_dostavka = $db->createCommand($sql_dostavka)->queryALL();
+		
+		$this->pageTitle = $page['meta_title'].'';
+		Yii::app()->clientScript->registerMetaTag($page['meta_description'], 'description');
+		Yii::app()->clientScript->registerMetaTag($page['meta_keywords'], 'keywords');
+
+		$cart =  (string)Yii::app()->request->cookies['cart'];
+		$ARR_products = explode('|', $cart);
+		$SelectArr = array();
+		foreach ($ARR_products as $K => $V) {
+			if ($V != ''){
+				$Arrone = explode(':', $V);
+				$SelectArr[] = $Arrone[0];
+			}
+		}
+		$products = array();
+		$IDproduct = array();
+		if (count($SelectArr) > 0) {
+			$db = Yii::app()->db;
+			$sql = 'SELECT p.id, p.name, p.price, p.img, c.uri as cat_uri FROM {{products}} p
+				INNER JOIN {{products_category}} pc ON pc.product_id = p.id
+				INNER JOIN {{categories}} c ON pc.category_id = c.id
+ 				WHERE p.id IN ('.implode(',', $SelectArr).') AND p.visibly = 1';				
+			$ProductsArr = $db->createCommand($sql)->queryAll();
+			
+			
+			foreach($ProductsArr as $pr)
+				$IDproduct[$pr['id']] = $pr;
+			
+		}
+		$i = 0;
+		foreach($ARR_products  as $K => $V){
+		if ($V != ''){
+				$Arrone = explode(':', $V);
+				$products[$i] = $IDproduct[$Arrone[0]];
+				$products[$i]['price'] = $Arrone[1];
+				$products[$i]['count'] = $Arrone[2];
+				$products[$i]['fid'] = $Arrone[3];
+				$i++;
+			}
+		}
+
+		
+		$this->render('cart', array(
+			'page' => $page,
+			'products' => $products,
+			'page_dostavka' => $page_dostavka
 		));
 	}
 	
@@ -179,6 +239,10 @@ class SiteController extends Controller
 		$db = Yii::app()->db;
 		$sql = "SELECT * FROM pages WHERE uri = '$alias'";
 		$page= $db->createCommand($sql)->queryRow();
+
+		$this->pageTitle=$page['meta_title'].'';
+		Yii::app()->clientScript->registerMetaTag($page['meta_description'], 'description');
+		Yii::app()->clientScript->registerMetaTag($page['meta_keywords'], 'keywords');
 		
 		if (empty($page)) {
 			throw new CHttpException(404,'Ой, такой страницы нет');
@@ -273,35 +337,36 @@ class SiteController extends Controller
 			}
 		}
 	}
+	
+	
+	
+	public function actionSitemap(){
 		
-// 	public function actionSitemap()
-// 	{
-// 		$this->layout ='application.view.layouts.clearn';
-// 		$this->layoutPath ="protected/view/layouts";
-	
-// 		$ARR_products = Yii::app()->db->createCommand()
-// 		->select('id, cat_uri')
-// 		->from('products')
-// 		->where('no_active="0"')
-// 		->queryALL();
-	
-// 		$ARR_categories = Yii::app()->db->createCommand()
-// 		->select('id, uri')
-// 		->from('catalog')
-// 		->where('no_active="0"')
-// 		->queryALL();
-	
-// 		$ARR_pages = Yii::app()->db->createCommand()
-// 		->select('id, uri')
-// 		->from('pages')
-// 		->where('id!=""')
-// 		->queryALL();
-	
-// 		$this->render('sitemap', array(
-// 				'ARR_products' => $ARR_products,
-// 				'ARR_categories' => $ARR_categories,
-// 				'ARR_pages' => $ARR_pages,
-// 		)
-// 		);
-// 	}
+		$ARR_products = Yii::app()->db->createCommand()
+			->select('id, cat_id')
+			->from('products')
+			->where('id!=""')
+			->queryALL();
+		
+		$ARR_categories = Yii::app()->db->createCommand()
+			->select('id, uri')
+			->from('categories')
+			->where('visibly=1')
+			->queryALL();
+		
+		$ARR_pages = Yii::app()->db->createCommand()
+			->select('id, uri')
+			->from('pages')
+			->where('uri!=""')
+			->queryALL();
+		
+		
+		$this->render('sitemap', array(
+				'ARR_products' => $ARR_products,
+				'ARR_categories' => $ARR_categories,
+				'ARR_pages' => $ARR_pages,
+			)
+		);
+	}
+
 }

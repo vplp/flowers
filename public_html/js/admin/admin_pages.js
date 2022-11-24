@@ -75,5 +75,49 @@ $(function(){
 			  success: function(data){}
 		});
 	});
+
+	$(function(){
+		
+		$('#regions-delivery-admin input').focusout(function(){
+			let regionValue = $(this).val();
+			let regionId = $(this).closest('tr').attr('id');
+			let regionName = $(this).attr('name');
+
+			$.ajax({
+				url: "/admin/update",
+				type: "POST",
+				data: "stat=editfield&field=" + regionName + "&value=" + regionValue + "&id=" + regionId + "&f=delivery_regions",
+				success: function(data){
+				}
+		  });
+		});
+
+		//Сортировка на стр. доставка
+		$('#regions-delivery-admin tbody').sortable({
+			revert: 100,
+			update: function(){
+					var sort = 1;
+					  var sort_line = '';
+					 $( "#regions-delivery-admin tbody tr" ).each(function(index){
+						 if(index == 0){
+							return;
+						 }
+						 var id = $(this).attr('id');
+						 sort_line = sort_line+'|'+id+'-'+sort;
+						 sort++;
+					 })
+					 $.ajax({
+						  url: '/admin/update',
+						  type: 'POST',
+						  data: 'stat=sort&sort_line='+sort_line+'&f=delivery_regions',
+						  success: function(data){
+						  }
+					});				
+			}
+		});
+		
+		$('#products tbody tr').disableSelection();
+
+	});
 	
 });

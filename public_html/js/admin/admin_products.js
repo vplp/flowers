@@ -10,7 +10,10 @@ $(function(){
 		update: function(){
 				var sort = 1;
 		  		var sort_line = '';
-				 $( "#products tbody tr" ).each(function(){
+				 $( "#products tbody tr" ).each(function(index){
+					 if(index == 0){
+						return;
+					 }
 					 var id = $(this).attr('id').split('_')[1];
 					 sort_line = sort_line+'|'+id+'-'+sort;
 					 sort++;
@@ -55,8 +58,10 @@ $(function(){
 		
 	})
 	
-	$("body").on("click", ".row_product_price .del", function(){
-		$(this).parents(".row_product_price").remove();
+	$("body").on("click", ".feature_one_price .del", function(){
+		$(this).parent(".feature_one_price").remove();
+		console.log('del');
+		
 		UpdateProductPrices();
 	})
 
@@ -222,7 +227,7 @@ $('input, textarea, select').focusout(function(){
 
 
 	$('.delete_product').click(function(){
-		if (confirm("Вы дуйствительно хотите удалить этот товар")) {
+		if (confirm("Вы действительно хотите удалить этот товар")) {
 		
 		} else {
 			return true;

@@ -27,7 +27,7 @@ $this->widget('application.modules.admin.extensions.Admin.OneProduct',array(
 </div>
 <div class="br"></div>
 <div id="addimg_other_popup" class="addimg_other_popup orders_popup">
-	<div class="popup_label">Выберите подходящий товарs</div>
+	<div class="popup_label">Выберите подходящий товар</div>
 	<div class="popup_del"><img src="/img/big_del.jpg"></div>
 	<div class="br"></div>
 	<div class="popup_content"></div>

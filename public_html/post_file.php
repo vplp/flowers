@@ -21,11 +21,11 @@ if(strtolower($_SERVER['REQUEST_METHOD']) != 'post' ){
 		
 		$upload_dir = $_SERVER['DOCUMENT_ROOT'].'/uploads/products/{size}/'.$_GET['f'].'/';
 
-	} elseif ($_GET['flag'] == 'action') { 
+	} elseif ($_GET['flag'] == 'action') {
 		$WidthuploadARR[] 	= array(960, 		393, 		'960x393');
 		$WidthuploadARR[] 	= array(240, 		160, 		'240x160');
 		$upload_dir = $_SERVER['DOCUMENT_ROOT'].'/uploads/products/{size}/'.$_GET['f'].'/';
-		 
+		
 	} elseif ($_GET['flag'] == 'about') {
 		$WidthuploadARR[] 	= array(400, 		350, 		'400x350');
 		$WidthuploadARR[] 	= array(119, 		91, 		'119x91');
@@ -65,10 +65,10 @@ if(strtolower($_SERVER['REQUEST_METHOD']) != 'post' ){
 	if(move_uploaded_file($pic['tmp_name'], $upload_dir_time.$filename)){
 		
 		//$gis = getimagesize($upload_dir_time.$filename);
-			
-				
-				
-				
+		
+		
+		
+		
 		foreach ($WidthuploadARR as $K => $V) {
 				$thumb = new Imagick($upload_dir_time.$filename);
 				
@@ -121,9 +121,14 @@ if(strtolower($_SERVER['REQUEST_METHOD']) != 'post' ){
 				if(!is_dir($dir)) {
 					mkdir($dir);
 				}
+			
+				
+				
 				$image = new Imagick();
 				$image->newImage($V[0], $V[1],  new ImagickPixel('white'));
 				$image->setImageFormat($thumb->getImageFormat());
+				$img_Width = $image->getImageWidth();
+				$img_Height = $image->getImageHeight();
 				
 				if ($jcrop) {
 					$thumb->cropImage($w,$h,$x,$y);
@@ -131,7 +136,7 @@ if(strtolower($_SERVER['REQUEST_METHOD']) != 'post' ){
 						$thumb->resizeImage($V[0], $V[1],Imagick::FILTER_LANCZOS,1);
 					}
 				}else {
-						                
+					
 					$WidthProp = $V[0] /$V[1];
 					$HeightProp = $thumb->getImageWidth() / $thumb->getImageHeight();
 					
@@ -141,7 +146,25 @@ if(strtolower($_SERVER['REQUEST_METHOD']) != 'post' ){
 						$thumb->ThumbnailImage(0,$V[1]);
 					}
 				}
+			
+				$watermark = new Imagick();
+				$watermark->readImage(getcwd(). "/watermark.png");
+				$watermark_Width = $watermark->getImageWidth();
+				$watermark_Height = $watermark->getImageHeight();
+				
+				if ($img_Height < $watermark_Height || $img_Width < $watermark_Width) {
+					$watermark->scaleImage($img_Width, $img_Height, true);
+					$watermark_Width = $watermark->getImageWidth();
+					$watermark_Height = $watermark->getImageHeight();
+				}
+			
+				$x = ($img_Width - $watermark_Width) / 2;
+				$y = ($img_Height - $watermark_Height) / 2;
+			
+				
 				$image->compositeImage( $thumb, Imagick::COMPOSITE_DEFAULT, ($image->getImageWidth() - $thumb->getImageWidth())/2, ($image->getImageHeight() - $thumb->getImageHeight())/2 );
+			
+				//$image->compositeImage( $watermark, Imagick::COMPOSITE_DEFAULT, $x, $y);
 				
 				$image->unsharpMaskImage(0 , 0.53 , 1 , 0.05);
 				$image->writeImage( $dir.$filename);
@@ -167,27 +190,27 @@ function exit_status($str){
 }
 
 
-function autoRotateImage($image) { 
-    $orientation = $image->getImageOrientation(); 
+function autoRotateImage($image) {
+    $orientation = $image->getImageOrientation();
 
-    switch($orientation) { 
-        case imagick::ORIENTATION_BOTTOMRIGHT: 
-            $image->rotateimage("#000", 180); // rotate 180 degrees 
-        break; 
+    switch($orientation) {
+        case imagick::ORIENTATION_BOTTOMRIGHT:
+            $image->rotateimage("#000", 180); // rotate 180 degrees
+        break;
 
-        case imagick::ORIENTATION_RIGHTTOP: 
-            $image->rotateimage("#000", 90); // rotate 90 degrees CW 
-        break; 
+        case imagick::ORIENTATION_RIGHTTOP:
+            $image->rotateimage("#000", 90); // rotate 90 degrees CW
+        break;
 
-        case imagick::ORIENTATION_LEFTBOTTOM: 
-            $image->rotateimage("#000", -90); // rotate 90 degrees CCW 
-        break; 
-    } 
+        case imagick::ORIENTATION_LEFTBOTTOM:
+            $image->rotateimage("#000", -90); // rotate 90 degrees CCW
+        break;
+    }
 
-    // Now that it's auto-rotated, make sure the EXIF data is correct in case the EXIF gets saved with the image! 
-    $image->setImageOrientation(imagick::ORIENTATION_TOPLEFT); 
+    // Now that it's auto-rotated, make sure the EXIF data is correct in case the EXIF gets saved with the image!
+    $image->setImageOrientation(imagick::ORIENTATION_TOPLEFT);
     return $image;
-} 
+}
 function get_extension($file_name){
 	$ext = explode('.', $file_name);
 	$ext = array_pop($ext);

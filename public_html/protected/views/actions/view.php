@@ -1,5 +1,8 @@
 <style>
-.any_bield { position: absolute; margin:0 !important;}
+.any_bield { 
+	/* position: absolute;  */
+	margin:0 !important;
+	}
 </style>
 <div class="action_wrap">
 	<div class="wrap_sizes  ">

@@ -11,7 +11,11 @@
 
 <div class="content_left">
 <?php 
- 
+//foreach ($ARRitems as $key => $value) {
+//	echo '<pre>';
+//	print_r($value);
+//	exit;
+//}
 //EA($ARRitems);
 ?>
 <?php
@@ -20,7 +24,8 @@ $this->widget('application.modules.admin.extensions.Admin.Listing',array(
 		'ARRfields' => array(
 				array('name'=> 'img', 'label'=> 'Изображение' , 'link' => true , 'style' => ''),
 				array('name'=> 'name', 'label'=> 'Название' , 'link' => true , 'style' => 'text-align:left;'),
-				array('name' => 'price', 'label' => 'Цена (р)'),
+				array('name' => 'feature_price', 'label' => 'Цена (старая)'),
+				array('name' => 'price', 'label' => 'Цена (авто)'),
 				array('name'=> 'categories_list', 'label'=> 'Название' , 'style' => 'text-align:left;'),
 				
 		),

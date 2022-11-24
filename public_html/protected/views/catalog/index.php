@@ -1,7 +1,7 @@
 <style>
-.any_bield { position: absolute; margin:0 !important;}
+.any_bield { margin:0 !important;}
 </style>
-<div class="wrap_sizes " style="overflow:hidden;">
+<div class="wrap_sizes " style="">
 	<?php $this->renderPartial('../catalog/_items_block', array(
 			'products' => $products,
 			'category' => $category,
@@ -12,6 +12,8 @@
 			'sort' => true,
 			'pages' => $pages,
 			'priceRanges' => $priceRanges,
+			'prod_season_ids' => $prod_season_ids,
+			'prod_order_ids' => $prod_order_ids
 	));	?>
 	<?php  if (isset($C['description']) && $C['description'] != "") :?>
 		<div class="wrap_block  description_block " style="min-height: 0px;">
@@ -21,7 +23,7 @@
 	<?php endif;?>
 	<?php
 		//pinterest widget script в разделе свадебных букетов
-		if ($category['id'] == 74) {
+		if ($category && $category['id'] == 74) {
 			echo '<script async defer src="//assets.pinterest.com/js/pinit.js"></script>';
 		}
 	?>

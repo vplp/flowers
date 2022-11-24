@@ -19,7 +19,7 @@ class UpdateController extends Controller
 					$onePrice = explode(':', $V);
 					$price = $price = preg_replace("/\D/", "", $onePrice[1]);
 					$arrVal[] = $onePrice[0];
-					if ($onePrice[0] != '' && $price != ''){
+					if ($onePrice[1] != '' && $price != ''){
 						$db = Yii::app()->db;
 						$sql = 'INSERT  INTO  feature_product_price (product_id, feature_id, value, price) VALUES (\''.$_POST['id'].'\', \''.$_POST['feature_id'].'\',\''.$onePrice[0].'\',\''.$price.'\')';
 						$cmd = $db->createCommand($sql);
@@ -32,7 +32,7 @@ class UpdateController extends Controller
 					}
 				}
 				Yii::app()->db->createCommand()->update('features_products', array( 'value'=> implode('|', $arrVal)), 'product_id=:id AND feature_id = :feature_id', array(':id' => $_POST['id'], ':feature_id' => $_POST['feature_id']));
-				Yii::app()->db->createCommand()->update('products', array( 'price'=> $defPrice), 'id=:id', array(':id' => $_POST['id']));
+				//Yii::app()->db->createCommand()->update('products', array( 'price'=> $defPrice), 'id=:id', array(':id' => $_POST['id']));
 				
 				
 			} elseif	($_POST['stat'] == 'edit_feachers_categories' ) {
@@ -317,7 +317,13 @@ class UpdateController extends Controller
 				} elseif ($_POST['field'] == 'hot' && $_POST['f'] == 'products' && $_POST['value'] == 1 ) {		
 				 	Yii::app()->db->createCommand()->update($_POST['f'], array( $_POST['field']=> $_POST['value']), 'id=:id', array(':id' => $_POST['id']));
 				 	
-			 	} elseif ($_POST['field'] == 'price') {		
+			 	} elseif ($_POST['field'] == 'season' && $_POST['f'] == 'prices' && $_POST['value'] == 1 ) {		
+					Yii::app()->db->createCommand()->update($_POST['f'], array( $_POST['field']=> $_POST['value']), 'id=:id', array(':id' => $_POST['id']));
+					
+				}elseif ($_POST['field'] == 'region_name' && $_POST['f'] == 'delivery_regions' && $_POST['value']) {		
+					Yii::app()->db->createCommand()->update($_POST['f'], array( $_POST['field']=> $_POST['value']), 'id=:id', array(':id' => $_POST['id']));
+					
+				}elseif ($_POST['field'] == 'price') {		
 	
 			 	 	$price = preg_replace("/\D/","",$_POST['value']);
 			 	 	Yii::app()->db->createCommand()->update($_POST['f'], array( $_POST['field']=> $price), 'id=:id', array(':id' => $_POST['id']));
@@ -361,6 +367,29 @@ class UpdateController extends Controller
 			 	 		}
 			 	 	}
 
+				}elseif ($_POST['stat'] == 'editfield' && $_POST['field'] == 'florist_services_price') {
+
+					$product_id = $_POST['id'];
+					$products_price_data = Yii::app()->db->createCommand('SELECT price_id, quantity FROM products_prices WHERE product_id = ' . $product_id)->queryAll();
+					$florist_services_price = $_POST['value'];
+	
+					$total = 0;
+	
+					foreach ($products_price_data as $product_price) {
+
+						$price_id = $product_price['price_id'];
+						$quantity = $product_price['quantity'];
+	
+						if ($price_id > 0 && $quantity > 0) {
+							$row = Yii::app()->db->createCommand('SELECT cost FROM prices WHERE id = ' . $price_id)->queryRow();
+	
+							if ($row['cost'] > 0)
+								$total += $row['cost'] * $quantity;
+						}
+					}
+					$total += (int)$florist_services_price;
+					Yii::app()->db->createCommand()->update('products', array('price'=> $total, 'price_update' => time()), 'id=:id', array(':id' => $product_id));
+					Yii::app()->db->createCommand()->update('products', array( 'florist_services_price'=> $_POST['value']), 'id=:id', array(':id' => $_POST['id']));
 				} else {
 				 	
 				 	Yii::app()->db->createCommand()->update($_POST['f'], array( $_POST['field']=> $_POST['value']), 'id=:id', array(':id' => $_POST['id']));
@@ -375,9 +404,6 @@ class UpdateController extends Controller
 						Yii::app()->db->createCommand()->update($_POST['f'], array( 'orders'=> $Arrsort[1]), 'id=:id', array(':id' => $Arrsort[0]));
 					}
 				}
-			
-			
-			
 			
 			
 			} elseif ($_POST['stat'] == 'addnew'){
@@ -524,10 +550,17 @@ class UpdateController extends Controller
 							$total += $row['cost'] * $quantity;
 
 						Yii::app()->db->createCommand('INSERT INTO products_prices (product_id, price_id, quantity) VALUES ('.$product_id.', '.$price_id.', '.$quantity.')')->execute();
+						
+						Yii::app()->db->createCommand('UPDATE features_products SET `visibly`=1 WHERE feature_id = 10 AND product_id = ' . $product_id)->execute();
+						
 					}
 				}
 
-				Yii::app()->db->createCommand()->update('products', array('price'=> $total, 'price_update' => time()), 'id=:id', array(':id' => $product_id));
+				Yii::app()->db->createCommand()->update('products', array(
+					'price'=> $total, 
+					'price_update' => time()), 
+					'id=:id', 
+					array(':id' => $product_id));
 			}
 		} 
 	}

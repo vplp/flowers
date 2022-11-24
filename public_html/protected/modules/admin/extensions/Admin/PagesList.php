@@ -33,7 +33,7 @@ class PagesList extends CWidget
 						<tr  class="one_order_header">
 							
 							<th class="name_header" style="width:200px; padding-left:5px;text-align:left;">Название</th>
-							<th class="cat_header">Загаловок</th>
+							<th class="cat_header">Заголовок</th>
 							<th class="cat_header">Ключевые_слова</th>
 							<th class="cat_header" style="">Описание</th>
 							<th class="cat_header" style="">Текст Страницы</th>

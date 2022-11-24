@@ -74,10 +74,17 @@ class OneCategory extends CWidget
 							<div class="features_one_label">Адрес страницы</div>
 							<div class="features_one_input"><input class="category_field" id="uri__'.$category['id'].'" type="text" value="'.$category['uri'].'" ></div>
 						</div>
+
 						<div class="features_one">
 								<div class="features_one_label">Тайтл</div>
 								<div class="features_one_input"><input class="category_field" type="text" name="meta_title" id="meta_title__'.$category['id'].'" value="'.$category['meta_title'].'"></div>
 						</div>
+
+						<div class="features_one">
+								<div class="features_one_label">Заголовок на странице</div>
+								<div class="features_one_input"><input class="category_field" type="text" name="page_title" id="page_title__'.$category['id'].'" value="'.$category['page_title'].'"></div>
+						</div>
+
 						<div class="features_one">
 								<div class="features_one_label">Кейвордс</div>
 								<div class="features_one_input"><input class="category_field" type="text" name="meta_keywords" id="meta_keywords__'.$category['id'].'" value="'.$category['meta_keywords'].'"></div>

@@ -8,10 +8,10 @@
 	<link rel="icon" href="/favicon.ico" type="image/x-icon">
 	<title><?php echo $this->pageTitle ?></title>
 	
-	<link href="/css/template.css?v=5" type="text/css" rel="stylesheet" />
+	<link href="/css/template.css?v=6" type="text/css" rel="stylesheet" />
 	<link href='https://fonts.googleapis.com/css?family=PT+Serif:400,700&subset=latin,cyrillic-ext,cyrillic' rel='stylesheet' type='text/css'>
 		<!--[if lt IE 8 ]>
-			<link href="/css/ie7.css?v=0" type="text/css" rel="stylesheet" />
+			<link href="/css/ie7.css?v=7" type="text/css" rel="stylesheet" />
 		<![endif]-->
 	<script src="https://code.jquery.com/jquery-3.6.0.js"></script>	
 	<script type="text/javascript" src="/js/jquery_modernizr.js"></script>

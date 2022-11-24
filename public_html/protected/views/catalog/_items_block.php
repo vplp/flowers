@@ -2,7 +2,7 @@
 	$Cockiesort = Formats::getCoockieSort();
 ?>
 
-<div style="<?php if (Yii::app()->user->getState('edit')) echo 'position:static !important';?>" class="wrap_block resize_block <?php if ($Cockiesort['smbig'] == 'big') echo 'big_block'?> <?php if (Yii::app()->user->getState('auth')) echo 'sortable' ?>   <?if (isset($class)) echo $class;?>">
+<div style="<?php if (Yii::app()->user->getState('edit')) echo 'position:static !important';?>" class="wrap_block resize_block <?php if ($Cockiesort['smbig'] == 'big') echo 'big_block'?> <?php if (Yii::app()->user->getState('auth')) echo 'sortable' ?>   <?php if (isset($class)) echo $class; ?>">
 		<div class="block_label-wrap d-flex">
 			<h1 class="my block_label aloading"><?php echo $label;?><?php if (!isset($class)) echo '<sup>&nbsp;'.count($products).'штук</sup>'?></h1>
 			<span>в наличии и под заказ с доставкой</span>

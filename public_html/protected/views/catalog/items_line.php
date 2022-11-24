@@ -1,11 +1,11 @@
 <div class="ias_parent catalog-page <?php echo $page == 'index' ? 'index' : ''?>">
-<?php 
+<?php
 
 if($page !== 'index' && $page !== 'product'){
 	$this->widget('widget.CatalogForm',array(
  ));
 } ?>
-<?php 
+<?php
 $i = 0;
 
 //sorting products of season and order type
@@ -32,7 +32,7 @@ foreach( $products as $product) :
 				$Arrimg = array_diff($Arrimg, array(''));
 
 				?>
-			
+
 				<div class="item ani_box aloading ias_child " <?php if (Yii::app()->user->getState('auth')) echo 'id="item_'.$product['id'].'"' ?>>
 					<?php if ($product['hot'] == 1) echo '<span class="hot_item"></span>'?>
 					<!--<a href="/catalog/<?php //echo $product['cat_uri']?>/<?php //echo $product['id']?>">
@@ -56,22 +56,22 @@ foreach( $products as $product) :
 						</div>
 						<span class="item_price"><?php echo number_format( ($product['price']), 0, ',', ' ' );?> <span class="b-rub">Р</span></span>
 
-						<?php if ($page !== 'index') { 
+						<?php if ($page !== 'index') {
 
 
 							$sql = 'SELECT * FROM feature_product_price WHERE product_id = '.$product['id'].' AND price > 0 ORDER BY feature_product_price.price ASC LIMIT 1';
 							$db = Yii::app()->db;
 							$product['features_price'] = $db->createCommand($sql)->queryAll();
-							
+
 							$fid = '';
 							foreach($product['features_price'] as $K => $FP){
 								$fid = $FP['id'];
 							}
-							
+
 							$cart =  (string)Yii::app()->request->cookies['cart'];
 							$ARR_products = explode('|', $cart);
-							
-							$checkProduct = false;	
+
+							$checkProduct = false;
 
 								foreach ($ARR_products as $K => $V){
 									$ARRone = explode(':', $V);
@@ -79,9 +79,9 @@ foreach( $products as $product) :
 										$checkProduct = true;
 										break;
 									}else{
-										$checkProduct = false;	
+										$checkProduct = false;
 									}
-								}	
+								}
 								$product_in_cart = $checkProduct ? 'in_cart' : 'addtocart';
 								$product_in_cart_text = $checkProduct ? 'В корзине' : 'В корзину';
 								$fid = ($fid != '') ? '?fid='.$fid : '';
@@ -103,7 +103,7 @@ foreach( $products as $product) :
 						<a href="<?php echo $catUri; ?>" class="products_allButton_arrow"></a>
 					</div>
 				<?php break; } ?>
-		<?php 
+		<?php
 			endforeach;
 		?>
 <div class="br"></div>

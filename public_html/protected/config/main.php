@@ -121,7 +121,7 @@ return array(
         // uncomment the following to use a MySQL database
 
         'db' => array(
-            'connectionString' => 'mysql:host=localhost;dbname=tulip63ru_shop',
+            'connectionString' => 'mysql:host=VH239.spaceweb.ru;dbname=tulip63ru_shop',
             'emulatePrepare' => true,
             'username' => 'tulip63ru_shop',
             'password' => '2L0bXggmG2015',

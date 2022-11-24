@@ -230,7 +230,7 @@
 						'page' => 'index',
 						'productsCount' => $c['count']
 				));	?>
-			</div>		
+			</div>
 		</div>
 		<?php endif;?>
 	<?php endforeach;?>

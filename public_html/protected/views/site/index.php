@@ -3,6 +3,15 @@
 	/* position: absolute;  */
 	margin:0 !important;
 	}
+
+
+/*.products_line * {*/
+/*    color: black;*/
+/*    background: red !important;*/
+/*    z-index: 100000 !important;*/
+/*    opacity: 1 !important;*/
+/*    display: block !important;*/
+/*}*/
 </style>
 
 <?php if (0) : ?>

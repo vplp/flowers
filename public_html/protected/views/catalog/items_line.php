@@ -11,6 +11,10 @@ $i = 0;
 //sorting products of season and order type
 $sort_products = $products;
 
+//echo '<pre>';
+//print_r($pages);
+//die();
+
 foreach($products as $key => $product){
 	if(in_array($product['id'], $prod_season_ids) && !in_array($product['id'], $prod_order_ids)){
 		unset($products[$key]);
@@ -23,6 +27,10 @@ foreach($products as $key => $product){
 }
 //sorting products of season and order type end
 
+
+//echo "<pre>";
+//print_r($products);
+//die();
 
 foreach( $products as $product) :
 				$i++;

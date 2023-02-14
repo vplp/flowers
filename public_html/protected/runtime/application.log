@@ -3500,3 +3500,68 @@ Stack trace:
 #10 {main}
 REQUEST_URI=/catalog/671
 ---
+2023/02/14 21:50:04 [error] [exception.CDbException] exception 'CDbException' with message 'CDbConnection failed to open the DB connection: SQLSTATE[28000] [1045] Access denied for user 'tulip63ru_newdev'@'77.222.56.152' (using password: YES)' in /home/t/tulip63ru/flowersvillage/yii/framework/db/CDbConnection.php:381
+Stack trace:
+#0 /home/t/tulip63ru/flowersvillage/yii/framework/db/CDbConnection.php(330): CDbConnection->open()
+#1 /home/t/tulip63ru/flowersvillage/yii/framework/db/CDbConnection.php(308): CDbConnection->setActive(true)
+#2 /home/t/tulip63ru/flowersvillage/yii/framework/base/CModule.php(387): CDbConnection->init()
+#3 /home/t/tulip63ru/flowersvillage/yii/framework/base/CModule.php(103): CModule->getComponent('db')
+#4 /home/t/tulip63ru/flowersvillage/public_html/protected/controllers/SiteController.php(17): CModule->__get('db')
+#5 /home/t/tulip63ru/flowersvillage/yii/framework/web/actions/CInlineAction.php(49): SiteController->actionIndex()
+#6 /home/t/tulip63ru/flowersvillage/yii/framework/web/CController.php(308): CInlineAction->runWithParams(Array)
+#7 /home/t/tulip63ru/flowersvillage/yii/framework/web/CController.php(286): CController->runAction(Object(CInlineAction))
+#8 /home/t/tulip63ru/flowersvillage/yii/framework/web/CController.php(265): CController->runActionWithFilters(Object(CInlineAction), Array)
+#9 /home/t/tulip63ru/flowersvillage/yii/framework/web/CWebApplication.php(282): CController->run('')
+#10 /home/t/tulip63ru/flowersvillage/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('')
+#11 /home/t/tulip63ru/flowersvillage/yii/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#12 /home/t/tulip63ru/flowersvillage/public_html/index.php(27): CApplication->run()
+#13 {main}
+REQUEST_URI=/
+HTTP_REFERER=https://www.yandex.ru/clck/jsredir?from=yandex.ru;suggest;browser&text=
+---
+2023/02/14 21:50:13 [error] [exception.CDbException] exception 'CDbException' with message 'CDbConnection failed to open the DB connection: SQLSTATE[28000] [1045] Access denied for user 'tulip63ru_newdev'@'77.222.56.152' (using password: YES)' in /home/t/tulip63ru/flowersvillage/yii/framework/db/CDbConnection.php:381
+Stack trace:
+#0 /home/t/tulip63ru/flowersvillage/yii/framework/db/CDbConnection.php(330): CDbConnection->open()
+#1 /home/t/tulip63ru/flowersvillage/yii/framework/db/CDbConnection.php(308): CDbConnection->setActive(true)
+#2 /home/t/tulip63ru/flowersvillage/yii/framework/base/CModule.php(387): CDbConnection->init()
+#3 /home/t/tulip63ru/flowersvillage/yii/framework/base/CModule.php(103): CModule->getComponent('db')
+#4 /home/t/tulip63ru/flowersvillage/public_html/protected/controllers/CatalogController.php(669): CModule->__get('db')
+#5 [internal function]: CatalogController->actionAdd('367')
+#6 /home/t/tulip63ru/flowersvillage/yii/framework/web/actions/CAction.php(108): ReflectionMethod->invokeArgs(Object(CatalogController), Array)
+#7 /home/t/tulip63ru/flowersvillage/yii/framework/web/actions/CInlineAction.php(47): CAction->runWithParamsInternal(Object(CatalogController), Object(ReflectionMethod), Array)
+#8 /home/t/tulip63ru/flowersvillage/yii/framework/web/CController.php(308): CInlineAction->runWithParams(Array)
+#9 /home/t/tulip63ru/flowersvillage/yii/framework/web/CController.php(286): CController->runAction(Object(CInlineAction))
+#10 /home/t/tulip63ru/flowersvillage/yii/framework/web/CController.php(265): CController->runActionWithFilters(Object(CInlineAction), Array)
+#11 /home/t/tulip63ru/flowersvillage/yii/framework/web/CWebApplication.php(282): CController->run('add')
+#12 /home/t/tulip63ru/flowersvillage/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('catalog/add')
+#13 /home/t/tulip63ru/flowersvillage/yii/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#14 /home/t/tulip63ru/flowersvillage/public_html/index.php(27): CApplication->run()
+#15 {main}
+REQUEST_URI=/catalog/add/367
+---
+2023/02/14 21:50:41 [error] [exception.CDbException] exception 'CDbException' with message 'CDbConnection failed to open the DB connection: SQLSTATE[28000] [1045] Access denied for user 'tulip63ru_newdev'@'77.222.56.152' (using password: YES)' in /home/t/tulip63ru/flowersvillage/yii/framework/db/CDbConnection.php:381
+Stack trace:
+#0 /home/t/tulip63ru/flowersvillage/yii/framework/db/CDbConnection.php(330): CDbConnection->open()
+#1 /home/t/tulip63ru/flowersvillage/yii/framework/db/CDbConnection.php(308): CDbConnection->setActive(true)
+#2 /home/t/tulip63ru/flowersvillage/yii/framework/base/CModule.php(387): CDbConnection->init()
+#3 /home/t/tulip63ru/flowersvillage/yii/framework/base/CModule.php(103): CModule->getComponent('db')
+#4 /home/t/tulip63ru/flowersvillage/public_html/protected/controllers/SiteController.php(17): CModule->__get('db')
+#5 /home/t/tulip63ru/flowersvillage/yii/framework/web/actions/CInlineAction.php(49): SiteController->actionIndex()
+#6 /home/t/tulip63ru/flowersvillage/yii/framework/web/CController.php(308): CInlineAction->runWithParams(Array)
+#7 /home/t/tulip63ru/flowersvillage/yii/framework/web/CController.php(286): CController->runAction(Object(CInlineAction))
+#8 /home/t/tulip63ru/flowersvillage/yii/framework/web/CController.php(265): CController->runActionWithFilters(Object(CInlineAction), Array)
+#9 /home/t/tulip63ru/flowersvillage/yii/framework/web/CWebApplication.php(282): CController->run('')
+#10 /home/t/tulip63ru/flowersvillage/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('')
+#11 /home/t/tulip63ru/flowersvillage/yii/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#12 /home/t/tulip63ru/flowersvillage/public_html/index.php(27): CApplication->run()
+#13 {main}
+REQUEST_URI=/
+---
+2023/02/14 21:58:53 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Невозможно обработать запрос "sm/0db8177a53b6eab1363e81af339c3641bb98c7faaf29a367c2094d37f014e37e.map".' in /home/t/tulip63ru/flowersvillage/yii/framework/web/CWebApplication.php:286
+Stack trace:
+#0 /home/t/tulip63ru/flowersvillage/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('sm/0db8177a53b6...')
+#1 /home/t/tulip63ru/flowersvillage/yii/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#2 /home/t/tulip63ru/flowersvillage/public_html/index.php(27): CApplication->run()
+#3 {main}
+REQUEST_URI=/sm/0db8177a53b6eab1363e81af339c3641bb98c7faaf29a367c2094d37f014e37e.map
+---

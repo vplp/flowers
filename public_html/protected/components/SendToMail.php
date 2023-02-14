@@ -374,12 +374,12 @@ class SendToMail {
 		$content .= str_replace('<br>',PHP_EOL,$order['comment']);
 		// $content .= 'Состав: '. PHP_EOL;
 		
-//		$chat_id = '-1001207810416';
-        $chat_id = '-1001654614933';
+		$chat_id = '-1001207810416';
+//        $chat_id = '-1001654614933';
 		
 		require 'vendor/autoload.php';
-//		$token = '1436034056:AAFyrdOTVhvNhWxnG1IXtPjeKKNAnQVd_ag';
-        $token = '5778702841:AAFlPeBrLufywF8PqqzXYUViuwBGgd1q0ew';
+		$token = '1436034056:AAFyrdOTVhvNhWxnG1IXtPjeKKNAnQVd_ag';
+//        $token = '5778702841:AAFlPeBrLufywF8PqqzXYUViuwBGgd1q0ew';
 
         $telegram = new Telegram\Bot\Api($token);
 		
@@ -432,11 +432,11 @@ class SendToMail {
 		$content .= 'Телефон заказчика: '.$order['to_phone']. PHP_EOL;
 		$content .= 'Телефон получателя: '.$order['from_phone']. PHP_EOL;
 		
-//		$chat_id = '-1001207810416';
-        $chat_id = '-1001654614933';
+		$chat_id = '-1001207810416';
+//        $chat_id = '-1001654614933';
 		require 'vendor/autoload.php';
-//		$token = '1436034056:AAFyrdOTVhvNhWxnG1IXtPjeKKNAnQVd_ag';
-        $token = '5778702841:AAFlPeBrLufywF8PqqzXYUViuwBGgd1q0ew';
+		$token = '1436034056:AAFyrdOTVhvNhWxnG1IXtPjeKKNAnQVd_ag';
+//        $token = '5778702841:AAFlPeBrLufywF8PqqzXYUViuwBGgd1q0ew';
 		$telegram = new Telegram\Bot\Api($token);
 		
 		$res = $telegram->sendMessage(

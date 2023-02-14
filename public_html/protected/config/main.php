@@ -142,7 +142,7 @@ return array(
 //        ),
 
         'db' => array(
-            'connectionString' => 'mysql:host=VH239.spaceweb.ru;dbname=tulip63ru_newdev',
+            'connectionString' => 'mysql:host=localhost;dbname=tulip63ru_newdev',
             'username' => 'tulip63ru_newdev',
             'password' => '_VKUQTLuK8BCKUCY',
             'charset' => 'utf8',
@@ -197,10 +197,10 @@ return array(
         // this is used in contact page
         'adminEmail' => 'shny0990@gmail.com',
         'toEmail' => array(
-//            'shny0990@gmail.com',
-            'vp@liderpoiska.ru',
-//            'sharapovyura@yandex.ru',
-//            'cvetykinel@yandex.ru'
+            'shny0990@gmail.com',
+//            'vp@liderpoiska.ru',
+            'sharapovyura@yandex.ru',
+            'cvetykinel@yandex.ru'
         ),
         //'toEmail'=>  array('solovyev@liderpoiska.ru'),
         //'toPhone'=> array(''),

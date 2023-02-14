@@ -70,11 +70,13 @@ phpinfo();exit;
 
 		
 
-		$chat_id = '-354451575';
+//		$chat_id = '-354451575';
+$chat_id = '-1001690240943';
 
 		require 'vendor/autoload.php';
 
-		$token = '1436034056:AAFyrdOTVhvNhWxnG1IXtPjeKKNAnQVd_ag';
+//		$token = '1436034056:AAFyrdOTVhvNhWxnG1IXtPjeKKNAnQVd_ag';
+$token = '5778702841:AAFlPeBrLufywF8PqqzXYUViuwBGgd1q0ew';
 
 		$telegram = new Telegram\Bot\Api($token);
 

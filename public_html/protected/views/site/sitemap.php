@@ -4,7 +4,7 @@
 	$dom->preserveWhiteSpace = false;
 	$urlset = $dom->createElement('urlset');
 	$urlset->setAttribute('xmlns','http://www.sitemaps.org/schemas/sitemap/0.9');
-	
+
 	foreach($ARR_pages as $row) {
 		$date = date(DATE_ATOM, time());
 		$url = $dom->createElement('url');
@@ -74,3 +74,6 @@
 	
 	$dom->appendChild($urlset);
 	$dom->save(__DIR__ . '/../../../sitemap.xml');
+
+	$comt = file_get_contents(__DIR__ . '/../../../sitemap.xml');
+	echo $comt;

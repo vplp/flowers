@@ -26,7 +26,7 @@ $this->widget('application.modules.admin.extensions.Admin.Listing',array(
 				array('name'=> 'name', 'label'=> 'Название' , 'link' => true , 'style' => 'text-align:left;'),
 				array('name' => 'feature_price', 'label' => 'Цена (старая)'),
 				array('name' => 'price', 'label' => 'Цена (авто)'),
-				array('name'=> 'categories_list', 'label'=> 'Название' , 'style' => 'text-align:left;'),
+				array('name'=> 'categories_list', 'label'=> 'Категория' , 'style' => 'text-align:left;'),
 				
 		),
 		

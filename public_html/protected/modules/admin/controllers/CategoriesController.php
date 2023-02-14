@@ -6,6 +6,25 @@ class CategoriesController extends Controller
 	public $layoutPath ="protected/modules/admin/views/layouts";
 	
 	public function actionIndex($cat_uri = '') {
+
+        if(\Yii::app()->request->isAjaxRequest){
+            if ($_POST['stat'] == 'edit_subcat') {
+//                echo '<pre>';
+//                print_r($_POST);
+//                return true;
+                $db = Yii::app()->db;
+//                $sql = 'INSERT INTO categories (parent_id, name, uri, meta_title, page_title, meta_keywords, meta_description) VALUES (\''.$_POST['parent_id'].'\', \''.$_POST['page_title'].'\', \''.$_POST['uri'].'\', \''.$_POST['meta_title'].'\', \''.$_POST['page_title'].'\', \''.$_POST['keyw'].'\', \''.$_POST['desc'].'\')';
+//                $db->createCommand($sql)->execute();
+
+                $sql = 'UPDATE categories SET
+                        parent_id = '.$_POST['parent_id'].'
+                        
+                        WHERE id ='.$_POST['cat_id'];
+                $cmd = $db->createCommand($sql);
+                $cmd->execute();
+            }
+        }
+
 		$this->redirect('/admin/categories/list/',array());
 	}	
 	
@@ -23,8 +42,15 @@ class CategoriesController extends Controller
 		if (!Yii::app()->user->getState('auth')) $this->redirect('/',array());
 		
 			$ARRCategory = $this->module->GetCategoryWithAll($id);
+
+//        echo '<pre>';
+//        print_r($this->module->GetMainCategories());
+//        die();
 		
 			$this->render('edit',array(
+                    'ARRmaincat' =>$this->module->GetMainCategories(),
+//                    'SubCatId' => $_POST['cat_id'],
+                    'ARRmaincat_product' =>$this->module->GetMainCategoriesId($id),
 					'ARRCategory' => $ARRCategory,
 					'ARRsection' => $this->module->GetAllSections(),
 					'ARRFeatures' => $this->module->GetAllFeatures(),
@@ -32,6 +58,8 @@ class CategoriesController extends Controller
 					'countProduct' => count($this->module->GetCategoryWhithAllProducts($id)),
 			)
 			);
+
+
 	}
 	
 	public function actionNew() {

@@ -60,6 +60,22 @@ class Category extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
+			//'products'=>[self::MANY_MANY, 'Product','products_category(category_id,product_id)'],
+			'products'=>[
+				self::HAS_MANY,
+				'Product',
+				'',//'products_category(category_id,product_id)',
+				//'on' => 'user.ref_type = :type',
+				'on'=>('products.id IN (
+					SELECT p.id
+					FROM products p
+					INNER JOIN  products_category pc ON pc.product_id = p.id
+					INNER JOIN categories c ON c.id = pc.category_id
+					WHERE (c.id = t.id OR c.parent_id = t.id) AND c.visibly = 1 AND p.visibly=1
+					GROUP by p.id
+					ORDER by p.orders ASC
+				)')
+			],
 		);
 	}
 

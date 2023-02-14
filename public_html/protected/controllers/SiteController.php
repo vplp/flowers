@@ -14,9 +14,6 @@ class SiteController extends Controller
 
     public function actionIndex()
     {
-
-        $db = Yii::app()->db;
-
         $db = Yii::app()->db;
         $sql = 'SELECT * FROM pages WHERE uri = "/"';
         $page = $db->createCommand($sql)->queryRow();
@@ -28,26 +25,71 @@ class SiteController extends Controller
         $this->pageTitle = $page['meta_title'] . '';
         Yii::app()->clientScript->registerMetaTag($page['meta_description'], 'description');
         Yii::app()->clientScript->registerMetaTag($page['meta_keywords'], 'keywords');
-
-        $sql = 'SELECT p.*, c.uri as cat_uri FROM products p INNER JOIN  products_category pc ON pc.product_id = p.id INNER JOIN categories c ON c.id = pc.category_id WHERE   c.visibly = 1 AND c.hidden = 0  AND p.visibly = 1 AND p.hot = 1 GROUP by p.id ORDER by p.orders DESC LIMIT 0,10';
+/*
+        $sql = 'SELECT p.*, c.uri as cat_uri
+		FROM products p
+		INNER JOIN  products_category pc ON pc.product_id = p.id
+		INNER JOIN categories c ON c.id = pc.category_id
+		WHERE c.visibly = 1 AND c.hidden = 0  AND p.visibly = 1 AND p.hot = 1
+		GROUP by p.id
+		ORDER by p.orders DESC LIMIT 0,10';
         $products = $db->createCommand($sql)->queryAll();
+*/		
+		$criteria=new CDbCriteria;
+		$criteria->addCondition('t.visibly = 1 and t.parent_id = 0');// and t.hidden = 0
+		$criteria->order = 't.orders ASC';
+		//$criteria->limit = 1;
+		$cats = Category::model()
+		/**/->with([
+			'products'=>[
+				//'condition'=>'products.visibly=1',
+				'order' => 'products.orders ASC',
+				//'select'=>['name'],
+				//'limit' => 1,
+			],
+		])
+		->findAll($criteria);
+		//echo '<pre>';print_r($cats);exit;
+		//echo '<pre>';print_r($cats);exit;
+//        $sql = 'SELECT c.* , COUNT(pc.category_id) as count_pFROM categories c LEFT JOIN  products_category pc ON pc.category_id = c.id LEFT JOIN  products p ON pc.product_id = p.id WHERE c.visibly = 1 and c.parent_id = 0 group by c.id  ORDER BY c.orders ASC';
 
-        $sql = 'SELECT c.* , COUNT(p.id) as count FROM categories c LEFT JOIN  products_category pc ON pc.category_id = c.id LEFT JOIN  products p ON pc.product_id = p.id WHERE c.visibly = 1 AND c.hidden = 0 AND p.visibly = 1 group by c.id order by c.orders ';
+/*
+        $sql = 'SELECT c.* FROM categories c WHERE c.visibly = 1 and c.parent_id = 0  ORDER BY c.orders ASC';
         $categories = $db->createCommand($sql)->queryAll();
 
         foreach ($categories as $K => $cat) {
-
-            $sql = 'SELECT p.*, c.uri as cat_uri FROM products p INNER JOIN  products_category pc ON pc.product_id = p.id INNER JOIN categories c ON c.id = pc.category_id WHERE  c.id = ' . $cat['id'] . ' AND c.visibly = 1  AND p.visibly = 1 GROUP by p.id ORDER by p.orders ASC LIMIT 0,14';
-            $categories[$K]['products'] = $db->createCommand($sql)->queryAll();
+                $sql = 'SELECT p.*, c.uri as cat_uri
+				FROM products p
+				INNER JOIN  products_category pc ON pc.product_id = p.id
+				INNER JOIN categories c ON c.id = pc.category_id
+				WHERE  (c.id = ' . $cat['id'] . ' OR c.parent_id ='.$cat['id'].') AND c.visibly = 1 AND p.visibly=1
+				GROUP by p.id
+				ORDER by p.orders ASC';
+//              $sql = 'SELECT p.*, c.uri as cat_uri
+//                      FROM products p, products_category pc, categories c
+//                      WHERE pc.product_id = p.id and c.id = pc.category_id and (c.id = ' . $cat['id'] . ' or c.parent_id = ' . $cat['id'] . ')  AND c.visibly = 1 AND p.visibly=1
+//                      GROUP by p.id
+//                      ORDER by p.orders ASC LIMIT 0,14';
+                $categories[$K]['products'] = $db->createCommand($sql)->queryAll();
+				//echo '<pre>';print_r($categories[$K]['products']);exit;
         }
 
-
+        $products_all = [];
+        foreach ($categories as $cat){
+            foreach ($cat['products'] as $product){
+                $sql = 'SELECT t1.price_id, t1.quantity, t2.name, t2.height,t2.cost, t2.country, t2.title FROM products_prices t1 INNER JOIN prices t2 ON t1.price_id = t2.id WHERE product_id = '.$product['id'];
+                $product['prices'] = $db->createCommand($sql)->queryAll();
+                $products_all[$product['id']] = $product;
+            }
+        }
+        $products = $products_all;
+*/
         $this->render('index', array(
-            'products' => $products,
+            //'products' => $products,
             'categories' => $categories,
             'actions' => $actions,
             'page' => $page,
-
+            'cats' => $cats,
         ));
     }
 
@@ -197,6 +239,9 @@ class SiteController extends Controller
             }
         }
 
+//        echo '<pre>';
+//        print_r($products);
+//        die();
 
         $this->render('cart', array(
             'page' => $page,
@@ -350,12 +395,16 @@ class SiteController extends Controller
             ->where('visibly=1')
             ->queryALL();
 
+//        echo '<pre>';
+//        print_r($ARR_categories);
+//        die();
+
+
         $ARR_pages = Yii::app()->db->createCommand()
             ->select('id, uri')
             ->from('pages')
             ->where('uri!=""')
             ->queryALL();
-
 
         $this->render('sitemap', array(
                 'ARR_products' => $ARR_products,

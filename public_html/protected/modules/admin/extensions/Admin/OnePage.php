@@ -26,6 +26,21 @@ class OnePage extends CWidget
 	{
 
 		$region_res = '';
+
+        $db = Yii::app()->db;
+        $sql = 'SELECT * FROM flowers WHERE visible_in_menu=1';
+        $flower_in_menu = $db->createCommand($sql)->queryRow();
+
+        $sql = 'SELECT id FROM pages where uri="'.$flower_in_menu['uri'].'"';
+        $flower_check_page_id = $db->createCommand($sql)->queryScalar();
+
+//        		echo '<pre>';
+//		print_r($flower_check_page_id);
+//		die();
+
+
+        $sql = 'SELECT count(visible_in_menu) as count FROM flowers WHERE visible_in_menu=1';
+        $count_flower_in_menu = $db->createCommand($sql)->queryScalar();
 		
 		foreach($regions as $region){
 			
@@ -34,7 +49,8 @@ class OnePage extends CWidget
 		}
 
 		$body = '';
-		$body .= '<a target="_blank" href="/'.$page['uri'].'" class="return_for_list non"></a>
+		$body .=  ($page["is_flower"]==1 ? '<a target="_blank" href="/catalog/byketi/'.$page['uri'].'" class="return_for_list non"></a>' :
+                    '<a target="_blank" href="/'.$page['uri'].'" class="return_for_list non"></a>'). '
 				<h1 style="display:none;" id="page_'.$page['id'].'"></h1>
 				
 				<div class="features_one">
@@ -92,17 +108,53 @@ class OnePage extends CWidget
 				
 				'.(($page['uri'] != '/' && ($page['uri'] != 'contacts')) ? '
 						<div class="block_label">uri</div>
-						<div class="features_one_input"><input class="page_field" type="text" name="name" id="uri__'.$page['id'].'" value="'.$page['uri'].'"></div>
+						<div class="features_one_input"><input class="page_field page_field_uri" type="text" name="name" id="uri__'.$page['id'].'" value="'.$page['uri'].'"></div>
 						<div class="block_label">Содержимое</div>
 						<div class="br"></div>				
 						<div class="view_order_details" style="width:570px;">
 							<div class="page_text" id="text_'.$page['uri'].'" name="text"  style=" outline:none; margin:0 20px; font-size:14px; min-height:40px; background-color: #FFFFFF;">'.$page['text'].'</div>
-						</div>' : '').'
+						</div>
+						
+				        <div class="features_one">	
+				        	<div class="block_label">Описание</div>
+						    <div class="br"></div>				
+						    <div class="view_order_details" style="width:570px;">
+							<div class="page_text" id="maindescription_'.$page['id'].'" name="text"  style=" outline:none; margin:0 20px; font-size:14px; min-height:40px; background-color: #FFFFFF;">'.$page['main_description'].'</div>
+						    </div>		
+				        </div>
+				                
+				        <div class="features_one">				
+				        	<div class="features_one_label">Заголовок описания</div>
+				        		<div class="br"></div>				
+				        		<div class="view_order_details" style="width:548px">
+				        			<div class="features_one_input label_desc"><input style="width:548px" class="page_field"  type="text" name="label_description" id="label_description__'.$page['id'].'" value="'.$page['label_description'].'"></div>
+				        		</div>	
+				        </div>
+				        
+				        <div class="features_one">				
+				        	<div class="features_one_label">Подзаголовок на странице</div>
+				        		<div class="br"></div>				
+				        		<div class="view_order_details" style="width:548px">
+				        			<div class="features_one_input subtitle"><input style="width:548px" class="page_field"  type="text" name="subtitle" id="subtitle" value="'.$page['subtitle'].'"></div>
+				        		</div>	
+				        </div>
+						' : '').'
 				
+				    '.(!$page['is_flower'] ? '
 					<div class="block_label">Сортировка меню (0 - не выводить)</div>
 					<div class="features_one_input">
 						<input class="page_field" type="text" name="name" id="menu_sort__'.$page['id'].'" value="'.$page['menu_sort'].'">
-					</div>				
+					</div>' : '
+						<div class="features_one" style="display: flex;align-items: center;margin-top: 24px;">
+				            <input '.($flower_in_menu['uri']==$page['uri'] ? 'checked="checked"' : '').' type="checkbox" name="page_in_menu" '.(($flower_in_menu['uri']!=$page['uri'] && $count_flower_in_menu>0) ? 'disabled' : '').' id="page_in_menu"  data-selected="" style="display: inline-block;margin: 0px; margin-right: 10px;">
+				            <label for="page_in_menu" class="checkbox_desc '.(($flower_in_menu['uri']!=$page['uri'] && $count_flower_in_menu>0) ? 'opacity_label' : '').'">Выводить отдельно в меню</label>
+				        </div>
+					').'	
+					
+					 '.(($page['is_flower'] && $flower_in_menu['uri']!=$page['uri'] && $count_flower_in_menu>0) ? '
+                         <span style="margin-left: 20px; margin-top: -10px; display: block;">(Сейчас уже выбран <a href="/admin/pages/edit/'.$flower_check_page_id.'/">'.$flower_in_menu['name'].')</a></span>':'
+				     ').'
+								
 						
 				'.(($page['uri'] != 'minicontacts') ? '
 				<div class="block_label"><span class="show_seo green_d">Поисковое продвижение</span></div>

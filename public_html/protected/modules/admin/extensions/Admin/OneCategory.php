@@ -2,20 +2,24 @@
 
 class OneCategory extends CWidget
 {
-	
-	
+
+    public $ARRmaincat =array();
+    public $ARRmaincat_product='';
+
+//    public $SubCatId='';
+
 	public $ARRCategory = array();
 	public $ARRFeatures = array();
 	public $ARRActions = array();
 	public $countProduct = '';
 	public $ARRsection = '';
-	
+
 	public function init()
 	{
 		$route=$this->getController()->getRoute();
 	//	$this->items=$this->normalizeItems($this->items,$route,$hasActiveChild);
 	}
-	
+
 	/**
 	 * Calls {@link renderMenu} to render the menu.
 	 */
@@ -26,15 +30,17 @@ class OneCategory extends CWidget
 		echo $this->RenderRow($this->ARRCategory);
 		echo '</div>';
 	}
-	
+
 	public function RenderRow($category){
-// 			echo '<pre>';
-// 			print_r($category);
-// 			echo '</pre>';
+//        echo '<pre>';
+//        print_r($category);
+//        die();
+
+
 			return '<a target="_blank" href="/catalog/'.$category['uri'].'" class="return_for_list non"></a>
 				<h1 style="display:none;" type="'.$category['uri'].'" id="category_'.$category['id'].'" ></h1>
 				<div class="features_one">
-						<div class="features_one_label">Название</div>
+						<div class="features_one_label">Название пункта меню</div>
 						<div class="features_one_input"><input class="category_field" maxlength="40" type="text" name="name" id="name__'.$category['id'].'" '.((isset($_GET['new']) && $_GET['new'] = '1') ? 'placeholder' : 'value').'="'.$category['name'].'"></div>
 				</div>
 				
@@ -45,6 +51,15 @@ class OneCategory extends CWidget
 						<div class="category_text" id="text_'.$category['id'].'" name="text"  style=" outline:none; margin:0 20px; font-size:14px; min-height:40px; background-color: #FFFFFF;">'.$category['text'].'</div>
 					</div>			
 				</div>
+				
+				<div class="features_one non_boder_features_one">
+				    <p class="features_one_label">Родительская категория</p>
+				    <div class="features_one_input subcat" id="subcat_id">'.$this->getSubCategorySelect($this->ARRmaincat, $this->ARRmaincat_product, $category) . '</div>
+				</div>
+				
+				<div class="features_one non_boder_features_one">
+				   <input '.(($category['typeCategory']==0) ? 'checked="checked"' : '').' type="checkbox" name="holiday_category" id="holiday_category" style="display: inline-block;margin-left: 10px;"><label for="holiday_category" class="checkbox_desc">Праздничная категория</label>
+                </div>
 				
 				<div class="features_one non_boder_features_one">
 						<div class="features_one_label">Использовать свойства</div>
@@ -69,10 +84,10 @@ class OneCategory extends CWidget
 					</div>			
 				</div>
 				<div class="block_label"><span class="show_seo green_d">Поисковое продвижение</span></div>
-				<div class="seo_input_block">
+				<div class="seo_input_block seo_category">
 						<div class="features_one non_boder_features_one">
 							<div class="features_one_label">Адрес страницы</div>
-							<div class="features_one_input"><input class="category_field" id="uri__'.$category['id'].'" type="text" value="'.$category['uri'].'" ></div>
+							<div class="features_one_input"><input class="category_field" name="meta_uri" id="uri__'.$category['id'].'" type="text" value="'.$category['uri'].'" ></div>
 						</div>
 
 						<div class="features_one">
@@ -81,8 +96,13 @@ class OneCategory extends CWidget
 						</div>
 
 						<div class="features_one">
-								<div class="features_one_label">Заголовок на странице</div>
+								<div class="features_one_label">Заголовок на странице (h1)</div>
 								<div class="features_one_input"><input class="category_field" type="text" name="page_title" id="page_title__'.$category['id'].'" value="'.$category['page_title'].'"></div>
+						</div>
+						
+						<div class="features_one">
+								<div class="features_one_label">Подзаголовок на странице</div>
+								<div class="features_one_input"><input class="category_field" type="text" name="subtitle" id="subtitle__'.$category['id'].'" value="'.$category['subtitle'].'"></div>
 						</div>
 
 						<div class="features_one">
@@ -100,7 +120,35 @@ class OneCategory extends CWidget
 			';
 
 	}
-	
+
+
+    public function getSubCategorySelect($ARR, $cat_id, $category) {
+
+        $option = '';
+        foreach($ARR as $cat) {
+            if ($cat['parent_id']==0) {
+                $option .= '<option '.(($cat['id'] == $category['parent_id']) ? 'selected="selected"' : '' ).' value="'.$cat['id'].'">'.$cat['name'].'</option>';
+            }
+        }
+
+        $option = '<option value="0">нет</option>'.$option;
+
+        return '
+				<div class="feature_one_price row_product_price">
+                    <select class="w120 feature_price_value _category-select" data-category-id="'.$category['id'].'" data-placeholder=" " id="change_subcategory">'.$option.'</select>
+                    <div class="del"><img src="/images/del.png"></div>
+				</div>
+			';
+    }
+
+
+
+
+
+
+
+
+
 	public function getToMultiSelectFeatures($ARRselect, $id) {
 		$option = '';
 		foreach ($this->ARRFeatures as $K => $V) {
@@ -112,7 +160,7 @@ class OneCategory extends CWidget
 			}
 			if ($V['tocart'] != 1) $option .= '<option  '.$select.' value="'.$V['id'].'">'.$V['name'].'</option>';
 		}
-	
+
  		return  '<select class="multiselect" data-placeholder=" "  multiple="true" name="" id="'.$id.'">'.$option.'</select>
  				';
 	}
@@ -127,15 +175,15 @@ class OneCategory extends CWidget
 			}
 			$option .= '<option  '.$select.' value="'.$V['id'].'">'.$V['name'].'</option>';
 		}
-	
+
 		return  '<select class="multiselect" data-placeholder=" "  multiple="true" name="" id="'.$id.'">'.$option.'</select>
  				';
 	}
-	
+
 	public function getSectionSelect($ARR) {
 		$option = '';
 		$check = false;
-	
+
 		foreach ($ARR as $K => $V) {
 			$select = '';
 			if ($V['id'] == $this->ARRCategory['section_id']) {
@@ -144,7 +192,7 @@ class OneCategory extends CWidget
 			}
 			$option .= '<option  '.$select.' value="section_id__'.$V['id'].'">'.$V['name'].'</option>';
 		}
-	
+
 		if (!$check) {
 			return  '<select  type="lastcat_'.$this->ARRCategory['section_id'].'" data-placeholder="Выберите Секцию" name="" id="change_section">
 						<option selected="selected" value="section_id__'.$this->ARRCategory['section_id'].'" >нет</option>
@@ -155,11 +203,11 @@ class OneCategory extends CWidget
 			return  '<select  type="lastcat_'.$this->ARRCategory['section_id'].'" data-placeholder="Выберите Секцию" name="" id="change_section">'.$option.'</select>
 				';
 		}
-	
+
 	}
-	
-	
+
+
 }
-	
+
 
 //

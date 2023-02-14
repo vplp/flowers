@@ -5,6 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="language" content="en" />
+    <meta name='robots' content='noindex'/>
 	<link rel="icon" href="/favicon.ico" type="image/x-icon">
 	<title><?php echo $this->pageTitle ?></title>
 	
@@ -286,6 +287,19 @@
 
 	</div>
 	</div>
+
+  <?php if(!empty(Yii::app()->params['breadcrumbs']) && count(Yii::app()->params['breadcrumbs'])>2): ?>
+      <div class="breadcrumbs">
+          <div class="breadcrumbs-items">
+              <?php foreach(Yii::app()->params['breadcrumbs'] as $crumb): ?>
+                  <div class="breadcrumbs-item">
+                      <a href="<?= $crumb['url'] ?>" class="breadcrumbs-link"><?= $crumb['title'] ?></a>
+                      <img src="/img/icon/arrow_right_breadcrumb.svg" alt="" class="breadcrumbs-svg">
+                  </div>
+              <?php endforeach; ?>
+          </div>
+      </div>
+  <?php endif; ?>
 
 	<?php echo $content;?>
 <div class="wrap_sizes" id="map">

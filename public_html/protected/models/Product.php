@@ -19,6 +19,8 @@
  */
 class Product extends CActiveRecord
 {
+	public $categories_list;
+	public $feature_price;
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.
@@ -63,6 +65,7 @@ class Product extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
+			'categories'=>array(self::MANY_MANY, 'Category','products_category(product_id, category_id)'),
 		);
 	}
 

@@ -110,6 +110,8 @@ textarea { line-height:1.5em;}
 .feature_one_price .feature_price_value{position:absolute; top:0; right:0;}
 .feature_product_price .feature_one_price .chzn-container {position:absolute; top:0; right:0;}
 .products_prices .feature_one_price .chzn-container {position:absolute; top:0; left:0;}
+.prices_wrap .products_prices .feature_one_price .chzn-container {position:absolute; top:0; left:0;}
+.categories_list .feature_one_price .chzn-container {position:absolute; top:0; left:0; width: 100% !important;}
 .feature_one_price .chzn-container {min-width:142px;}
 .feature_one_price .chzn-container a.chzn-single {height:26px;}
 .feature_one_price .del {position: absolute; top: 9px; right: -18px; opacity: 0.5; cursor: pointer;}
@@ -128,14 +130,15 @@ textarea { line-height:1.5em;}
 .button_add_img:hover, .button_add_img.drag, .button_add_other_product:hover{border:2px dashed #aaa;}
 
 .seo_input_block  {height:0px; overflow:hidden;  -moz-transition: ease all 0.2s; o-transition: ease all 0.2s; transition: ease all 0.2s; position:relative;}
-.seo_input_block.show {height:330px; }
+.seo_input_block.show:not(.seo_category) {height:330px; }
+.seo_input_block.seo_category.show {height:420px; }
 
 
 .values_for_type .one_type_values {}
 .values_for_type .one_type_values div {margin-top:10px;}
 .values_for_type .one_type_values div input , h1 input, .features_one_input input, .features_one_input textarea  { background-color:#fff; border: 1px solid #ccc; padding:5px 10px;}
-.values_for_type .one_value {position:relative;margin-bottom:5px;} 
-.values_for_type .one_value span{position:absolute; top: 9px; right: -18px; opacity:0.5; cursor:pointer;}
+.values_for_type .one_value {display: flex; align-items: center; position:relative;margin-bottom:5px;}
+.values_for_type .one_value span{top: 9px; right: -18px; opacity:0.5; cursor:pointer;}
 .values_for_type .one_value span:hover{ opacity:1;}
 .add_values_option {border:2px dashed #ccc; height:22px;background:url(/img/add.gif) no-repeat center; cursor:pointer;}
 .add_values_option:hover {border:2px dashed #aaa};
@@ -146,10 +149,12 @@ textarea { line-height:1.5em;}
 .add_values_option { line-height:14px;}
 
 .chzn-choices a {border:none !important;}
-.chzn-container-multi .chzn-choices, .chzn-container .chzn-drop {border:1px solid #ccc;}
+.chzn-container-multi .chzn-choices, .chzn-container .chzn-drop {border:1px solid #ccc; width: 100% !important;}
 .chzn-container .chzn-drop {border-top:none;}
 .search-choice {margin:3px 2px !important;}
 .search-field input {width:90% !important;}
+
+.checkbox_desc {white-space: nowrap;}
 
 .redactor_editor {min-height:200px !important;}
 
@@ -276,3 +281,25 @@ body.fullscreen .crop_blcok {left:50%; top:200px; opacity:1;}
 .action_preview .one_preview_img_product {float:left; margin-right:10px; margin-bottom:10px;}
 .action_img .one_preview_img_product {float:left; margin-right:10px; margin-bottom:10px; width:120px; height:119px;}
 .action_img .one_preview_img_product  img {margin-bottom:10px; width:120px; height:119px;}
+
+.del_subcategory {
+    display: inline-block;
+    cursor: pointer;
+}
+.del_subcategory img {
+    margin-left: 6px;
+    cursor: pointer;
+}
+
+.add_subcategory {
+    border: 2px dashed #ccc;
+    margin-top: 16px;
+    width: 188px;
+    height: 24px;
+    background: url(/img/add.gif) no-repeat center;
+    cursor: pointer;
+}
+
+.opacity_label {
+    opacity: 0.6;
+}

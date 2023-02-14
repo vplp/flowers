@@ -17,6 +17,11 @@ $(function() {
 	
 	var href = location.href;
 	/* global functions */
+
+	$('body').on('change', '[data-show-roza]', function() {
+		
+	})
+
 	var ajaxContentHandler = function(el, href) {
 		
 		var body = $('body');
@@ -258,7 +263,7 @@ $(function() {
 										
 										$('.item_active').removeClass('item_active').addClass('cont_item_'+now_el);
 										new_item.addClass('item_active').removeClass('cont_item_next').removeClass('cont_item_prev');
-										$('.wrap_item').css('height', $('.item_active').height() +40)
+										$('.wrap_item').css('height', $('.item_active').height() + 40)
 										$('.nav_item a').removeClass('loading');
 										check = true;
 										ALoad(new_item.find('.aloading'),function(){})

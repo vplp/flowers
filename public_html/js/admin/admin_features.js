@@ -13,11 +13,25 @@ $(function(){
 	if ($('#type_shoce').val() == 'text' || $('#type_shoce').val() == 'textarea') {
 		$('.values_for_type').hide();
 	}
-	
+
+	$('body').on('click', '.one_type_values_line span img', function(e){
+		// console.log($(e.target).attr('data-close-flower'));
+
+		$.ajax({
+			url: '/admin/update',
+			type: 'POST',
+			data: 'stat=delflower&value='+$(e.target).attr('data-close-flower'),
+			success: function(data){
+			}
+		});
+
+	})
+
 	$('body').on('click', '.one_type_values_line span img', function(){
 		$(this).parent('span').parent('div').slideUp(200, function(){
 			$(this).remove();
 			UpdateValuesTypes();
+			console.log('123');
 		})
 	})
 	
@@ -99,8 +113,11 @@ $(function(){
 	})
 	
 	
-	$('body').on('change', '.one_type_values_line input', function(){
-		UpdateValuesTypes();
+	$('body').on('change', '.one_type_values_line input', function(e){
+		if (!$(e.target).attr('name')) {
+			console.log(e.target);
+			UpdateValuesTypes();
+		}
 	})
 	
 	
@@ -164,6 +181,58 @@ $(function(){
 	
 })
 
+
+$( document ).ready(function() {
+	$('input[name="visible_in_filter"]').on('click', function (e) {
+		var isVisible;
+		var id = +$(e.target).attr('id');
+		if ($(e.target).attr('checked'))
+			isVisible = 1;
+		else
+			isVisible = 0;
+
+		$(e.target).attr('data-selected', isVisible);
+
+		$.ajax({
+			url: '/admin/update',
+			type: 'POST',
+			data: 'stat=editcheckbox&id='+id+'&isVisible='+isVisible,
+			success: function(data){
+			}
+		});
+	})
+});
+
+$( document ).ready(function() {
+	$('input[name="flowers_with_seo"]').on('click', function (e) {
+		var haveSEO;
+		// var name = $(e.target).prev().prev().prev().prev().val();
+		var uri = $(e.target).attr('data-uri');
+		var id = $(e.target).attr('id');
+
+		if (isNaN(id)) {
+			id = +id.replace(/[^\d]/g, '');
+		}
+
+		if ($(e.target).attr('checked'))
+			haveSEO = 1;
+		else
+			haveSEO = 0;
+
+		$(e.target).attr('data-selected', haveSEO);
+
+		$.ajax({
+			url: '/admin/update',
+			type: 'POST',
+			data: 'stat=editcheckbox_sef&id='+id+'&haveSEO='+haveSEO+'&uri='+uri,
+			success: function(data){
+			}
+		});
+	})
+});
+
+
+
 function UpdateValuesTocart(check) { 
 	if (check) var val = 1;
 	else var val = 0;
@@ -186,7 +255,7 @@ function UpdateValuesTypes() {
 	} else {
 		var Arrval = new Array();
 		var i = 0;
-		$('.one_type_values_line input').each(function(){
+		$('.one_type_values_line .values_select_option').each(function(){
 			if ($(this).val() != ''){
 				Arrval[i] = $(this).val();
 				i++;
@@ -197,11 +266,13 @@ function UpdateValuesTypes() {
 	}
 	
 	var id = $('h1').attr('id').split('feature_')[1];
-	
+	var old_uri = $('.input_selected_click').data('uri');
+	var name = $('.input_selected_click').val();
+
 	$.ajax({
 		  url: '/admin/update',
 		  type: 'POST',
-		  data: 'stat=editfield&f=features&field=variants&value='+value_type+'&id='+id,
+		  data: 'stat=editfield&f=features&field=variants&value='+value_type+'&id='+id+'&old_uri='+old_uri+'&name='+name,
 		  success: function(data){
 		  }
 	});

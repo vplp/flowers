@@ -1,3 +1,10 @@
+<?php
+//    echo '<pre>';
+//    print_r($products);
+//    die();
+?>
+
+
 <div class="wrap_sizes">
 	<div class="wrap_page cart-page" style="padding-top:0;">
 			<div class="page-title-wrap">
@@ -12,7 +19,8 @@
 					$all_price = 0;
 					if(count($products) > 0){
 
-						// print_r($products);
+//                            echo '<pre>';
+//                            die(print_r($products));
 
 						foreach($products as $product){ 
 							$all_price +=(int)$product['price'] * (int)$product['count'];
@@ -21,8 +29,15 @@
 							$Arrimg = explode('|', $product['img']);
 							$Arrimg = array_diff($Arrimg, array(''));
 							$all_count += (int)$product['count'];
-							
-							?>
+
+                            $db = Yii::app()->db;
+                            $sql = 'SELECT t1.price_id, t1.quantity, t2.name, t2.height,t2.cost, t2.country, t2.title FROM products_prices t1 INNER JOIN prices t2 ON t1.price_id = t2.id WHERE product_id = '.$product['id'];
+                            $prices = $db->createCommand($sql)->queryAll();
+
+                            $sql2 = 'select value from feature_product_price where id='.$product['fid'];
+                            $product_size = $db->createCommand($sql2)->queryScalar();
+
+//							?>
 							<div class="cart-item-wrapper">
 
 								<div class="cart-item d-flex" id="pr<?php echo $product['id'].$product['fid']?>">
@@ -41,9 +56,13 @@
 									</a>	
 								</div>
 
+                                    <div class="cart-item-size">
+                                        <?php echo $product_size;?>
+                                    </div>
+
 								<div class="cart-item-count">
 									<div class="count-minus-wrap">
-										<a class="count-minus basket_item_del" href="/catalog/delete/<?php echo $product['id']?>">
+										<a class="count-minus basket_item_del" href="/catalog/delete/<?php echo $product['fid']?>">
 											<svg xmlns="http://www.w3.org/2000/svg" width="14" height="2" viewBox="0 0 14 2" fill="none">
 												<path d="M0 2V0H14V2H0Z" fill="#333333"/>
 											</svg>
@@ -61,12 +80,16 @@
 									</div>
 								</div>
 
+
 								<div class="cart-item-price">
-									<span><?php echo number_format( $product['price'], 0, ',', ' ' );?> ₽</span>	
+									<span>
+                                        <?php
+                                            echo number_format( $product['price'], 0, ',', ' ' );
+                                        ?> ₽</span>
 								</div>
 
 								<div class="cart-item-remove">
-								<a href="/catalog/delete/<?php echo $product['id']?>?all=true"  alt="удалить из корзины" class="non basket_item_del">	
+								<a href="/catalog/delete/<?php echo $product['fid']?>?all=true"  alt="удалить из корзины" class="non basket_item_del">
 								<span>Удалить</span>
 									<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
 										<path d="M12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41L12.59 0Z" fill="#333333"/>
@@ -141,6 +164,8 @@
 						Имя заказчика
 						<input class="form-input" type="text" name="Order[name]" autocomplete="no">
 					</label>
+
+                    <input type="text" style="width: 0px; height: 0px; opacity: 0;">
 
 					<label>
 							Имя получателя

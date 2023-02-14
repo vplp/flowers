@@ -32,18 +32,40 @@ $(function(){
 	
 	
 /// ///////////////////////////////// ------------ ONE PRODUCT --------------------------------------------------	
-		
+
+	$( document ).ready(function() {
+		$('input#monobyket').on('click', function (e) {
+			var isMono;
+			var id = +$(e.target).data('id');
+			if ($(e.target).attr('checked'))
+				isMono = 1;
+			else
+				isMono = 0;
+
+			$(e.target).attr('data-selected', isMono);
+
+			$.ajax({
+				url: '/admin/update',
+				type: 'POST',
+				data: 'stat=check_mono_byket&id='+id+'&isMono='+isMono,
+				success: function(data){
+				}
+			});
+		})
+	});
 	
 	$("#add_feature_price").click(function(){
 		var id = new Date().getTime();
 		var data = $(".feature_one_price.tmp").html();
-		$('.feature_one_price.tmp').before('<div class="feature_one_price new">'+data+'</div>');
+		$('.feature_one_price.tmp').before('<div class="feature_one_price  new">'+data+'</div>');
 		$('.feature_one_price.new .chzn-container').remove();
 		$('.feature_one_price.new select').removeClass('chzn-done').attr('id', 'DD'+id).chosen();
 		$('.feature_one_price.new').removeClass('new');
-		
+		$('.feature_one_price .feature_price_rose').attr('data-via-id', '');
+
 	})
-	$("body").on("click", ".row_feature_one_price .del", function(){
+
+	$("body").on("click", ".row_feature_one_price .del:not(.del-rose)", function(){
 			$(this).parents(".row_feature_one_price").remove();
 			UPdateFeatureProductPrice();
 	})
@@ -51,7 +73,7 @@ $(function(){
 	$("#add_product_price").click(function(){
 		var id = new Date().getTime();
 		var data = $(".product_price.tmp").html();
-		$('.product_price.tmp').before('<div class="feature_one_price new">'+data+'</div>');
+		$('.product_price.tmp').before('<div class="feature_one_price  row_product_price new">'+data+'</div>');
 		$('.feature_one_price.new .chzn-container').remove();
 		$('.feature_one_price.new select').removeClass('chzn-done').attr('id', 'DD'+id).chosen();
 		$('.feature_one_price.new').removeClass('new');
@@ -59,16 +81,98 @@ $(function(){
 	})
 	
 	$("body").on("click", ".feature_one_price .del", function(){
-		$(this).parent(".feature_one_price").remove();
-		console.log('del');
-		
-		UpdateProductPrices();
+		if (!$(this).hasClass('del-rose')){
+			$(this).parent(".feature_one_price").remove();
+			console.log('del');
+
+			UpdateProductPrices();
+		}
+
 	})
 
+	$("body").on("click", ".feature_one_price .del-rose", function(){
+		$(this).parent(".feature_one_price").remove();
+		var feature_id = 12;
+		var flowerID = $('.row_product_price select').attr('data-id');
+		console.log('del');
+
+		$.ajax({
+			url: '/admin/update',
+			type: 'POST',
+			data: 'stat=product_feature_rose_del&id='+$(this).data('id')+'&feature_id='+feature_id+'&flowerID='+flowerID,
+			success: function(data){
+
+			}
+		});
+	})
+
+	$("body").on("change", ".feature_price_rose", function(){
+		if ($(this).hasClass('tmp-select'))
+			return;
+
+		// UPdateFeaturePriceRose();
+		var value = $(this).val();
+		var via = $(this).data('via-id');
+		// var cost = $(this).data('cost');
+		// console.log($(this));
+
+		var id = $('h1').attr('id').split('product_')[1];
+		var feature_id = 12;
+		var ArrPrices = new Array();
+		var i = 1;
+		$('.feature_product_price .feature_one_price:not(.tmp):not(.border)').each(function(){
+			var price = $(this).find('input.feature_price').val();
+			var value = $(this).find('select.feature_price_value').val();
+			if (price != '') {
+				ArrPrices[i] = value+':'+price;
+				i++;
+			}
+		})
+		var linePrice = ArrPrices.join('|');
+
+		$.ajax({
+			context: this,
+			url: '/admin/update',
+			type: 'POST',
+			data: 'stat=product_feature_rose&product_id='+$(this).data('id')+'&value='+value+'&via_id='+via+'&feature_id='+feature_id+'&line_price='+linePrice,
+			success: function(data){
+				let res = JSON.parse(data);
+
+				// if (cost){
+				// 	$(this).closest('.rose_parent').siblings('input').val(cost);
+				// }
+
+				if (res.id){
+					$(this).attr('data-via-id', res.id);
+					$(this).closest('.rose_parent').siblings('.del.del-rose').attr('data-id', res.id);
+				}
+				if (res.cost){
+					$(this).closest('.rose_parent').siblings('input').val(res.cost);
+				}
+			}
+		});
+	})
 			
 	$("body").on("change", ".feature_product_price input, .feature_product_price select", function(){
-		UPdateFeatureProductPrice();
+		if (!$(this).hasClass('feature_price_rose')) {
+			UPdateFeatureProductPrice();
+		}
 	})
+
+	$('body').on('change', '[data-show-roza]', function() {
+		let checked = 0;
+		if ($(this).attr('checked') != undefined)
+			checked = 1;
+
+		console.log(checked);
+		$.ajax({
+			url: '/admin/update',
+			type: 'POST',
+			data: 'stat=product_rose&product_id='+$(this).data('id')+'&checked='+checked,
+			success: function(data){}
+		});
+	})
+
 	function UPdateFeatureProductPrice() {
 		var id = $('h1').attr('id').split('product_')[1];
 		var feature_id = $('.feature_product_price').attr('id').split('__')[1];
@@ -93,12 +197,16 @@ $(function(){
 	}
 	
 	$("body").on("change", ".products_prices input, .products_prices select", function(){
-		UpdateProductPrices();
+		console.log('ааааа');
+		if (!$(this).hasClass('_category-select'))
+			UpdateProductPrices();
 	})
+
 	function UpdateProductPrices() {
 		var id = $('h1').attr('id').split('product_')[1];
 		var price_id = $('.products_prices').attr('id').split('__')[1];
 		var ArrPrices = new Array();
+		var namesFlowers = new Array();
 		var i = 1;
 		$('.products_prices .feature_one_price:not(.tmp):not(.border)').each(function(){
 			var quantity = $(this).find('input.feature_price').val();
@@ -108,11 +216,21 @@ $(function(){
 				i++;
 			}
 		})
+
+		$('.prices_list .row_product_price').each(function(){
+			var nameFlower = $(this).find('div a span').text().trim();
+			if (nameFlower.length > 0) {
+				namesFlowers.push(nameFlower);
+			}
+		})
+
+		console.log('namesFlowers', namesFlowers);
+
 		var data = ArrPrices.join('|');
 		$.ajax({
 			  url: '/admin/update',
 			  type: 'POST',
-			  data: 'stat=edit_products_prices&product_id='+id+'&data='+data,
+			  data: 'stat=edit_products_prices&product_id='+id+'&data='+data+'&names_flowers='+namesFlowers,
 			  success: function(data){
 			  }
 		});
@@ -166,12 +284,44 @@ $('.show_action_category input').change(function(){
 		});
 		$(this).addClass('enable_show');
 	}
-})	
-	
-$('#change_category').change(function(){
+})
+
+	$('#new_change_category').change(function(){
+		var id = $('h1').attr('id').split('product_')[1];
+		value = $(this).val();
+		// var last_category = $(this).attr('type').split('lastcat_')[1];
+		$.ajax({
+			url: '/admin/update',
+			type: 'POST',
+			data: 'stat=editfield&id='+id+'&f=products&value='+value+'&field=newcat_id',
+			success: function(data){
+				console.log('value',value)
+				console.log(data)
+				//location.reload();
+			}
+		});
+	});
+
+	$('#change_holiday').change(function(){
+		var id = $('h1').attr('id').split('product_')[1];
+		value = $(this).val();
+		var last_holiday= $(this).attr('type').split('lasthol_')[1];
+		$.ajax({
+			url: '/admin/update',
+			type: 'POST',
+			data: 'stat=editfield&id='+id+'&f=products&value='+value+'&field=holiday_id&last_value='+last_holiday,
+			success: function(data){
+				console.log('value',value)
+				console.log(data)
+				//location.reload();
+			}
+		});
+	});
+
+	$('#change_category').change(function(){
 	var id = $('h1').attr('id').split('product_')[1];	
 	value = $(this).val();
-	var last_category = $(this).attr('type').split('lastcat_')[1];	
+	var last_category = $(this).attr('type').split('lastcat_')[1];
 	$.ajax({
 		  url: '/admin/update',
 		  type: 'POST',

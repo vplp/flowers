@@ -31,6 +31,10 @@ class OneFeature extends CWidget
 	}
 
 	public function RenderOneProduct($ARRFeature) {
+
+//	    echo '<pre>';
+//	    print_r($_GET);
+//	    die();
 		
 // 		return'
 // 				<h1 style="display:none;" id="feature_'.$ARRFeature['id'].'" ></h1>
@@ -104,18 +108,46 @@ class OneFeature extends CWidget
 	
 	
 	public function renderValuesType($ARRvar ) {
+
+        $db = Yii::app()->db;
+        $sql = 'select * from flowers ' ;
+        $flowers = $db->createCommand($sql)->queryAll();
+
+        $flowersInFilter = [];
+        foreach ($flowers as $flower) {
+            $flowersInFilter[$flower['name']]['id'] = $flower['id'];
+            $flowersInFilter[$flower['name']]['visible'] = $flower['visible_in_menu'];
+            $flowersInFilter[$flower['name']]['seo'] = $flower['have_sef'];
+            $flowersInFilter[$flower['name']]['uri'] = $flower['uri'];
+        }
+
 		$line_input = '';
 		$ARR = explode('|', $ARRvar);
+
+//        echo '<pre>';
+//        print_r($flowersInFilter);
+//        die();
 		if ($ARR[0] != '') {
+		    $i=0;
 			foreach($ARR as $V){
-	
-				$line_input .= '<div class="one_value" ><input class="values_select_option" type="text" value="'.$V.'" placeholder="Вариант значения" /><span style=""><img src="/images/del.png"></span></div>';
+                if ($_GET['id']==10) {
+                    $line_input .= '<div class="one_value" ><input class="values_select_option"  data-uri="'.$flowersInFilter[$V]['uri'].'" type="text" value="'.$V.'" placeholder="Вариант значения" />
+                                        <span style="margin: 0px 10px;"><img data-close-flower="' . $V . '" name="delete-flower" src="/images/del.png"></span>
+                                        <input '.((!empty($flowersInFilter[$V]['seo'])) ? 'checked="checked"' : '').' type="checkbox" data-uri="'.$flowersInFilter[$V]['uri'].'" name="flowers_with_seo" data-selected="" id="flowers_with_seo_'.$flowersInFilter[$V]['id'].'" style="display: inline-block;margin-left: 10px;width: inherit;"><label for="flowers_with_seo_'.$flowersInFilter[$V]['id'].'" class="checkbox_desc">Страница с ЧПУ</label>
+                                    </div>';
+                    $i++;
+                } else {
+                    $line_input .= '<div class="one_value" ><input class="values_select_option" type="text" value="' . $V . '" placeholder="Вариант значения" />
+                                        <span style="margin: 0px 10px;"><img data-close-flower="' . $V . '" name="delete-flower" src="/images/del.png"></span>
+                                    </div>';
+                }
 			}
 		} else {
 			$line_input = '<div class="one_value" ><input class="values_select_option" type="text" value="" placeholder=" " /><span style=""><img src="/images/del.png"></span></div>
 							<div class="one_value" ><input class="values_select_option" type="text" value="" placeholder=" " /><span style=""><img src="/images/del.png"></span></div>		
 			';
 		}
+
 		
 		return $line_input;
 	}

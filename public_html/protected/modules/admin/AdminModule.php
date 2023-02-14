@@ -21,60 +21,113 @@ class AdminModule extends CWebModule
 	
 	public function GetProductWhithAll($prod_id) {
 
+        $newArr = [];
 		$ARR = Yii::app()->db->createCommand()
 		->select('t1.*')
 		->from('products AS t1')
 		->where('t1.id = '.$prod_id.'')
 		->queryRow();
 		
-		$ARR['categories'] = Yii::app()->db->createCommand()
-		->select('t2.id, t2.name , t2.uri, t3.tocatalog')
-		->from('products_category as t1,  categories AS t2,  sections AS t3')
-		->where('t1.product_id = '.$ARR['id'].' AND t2.id = t1.category_id AND t2.section_id = t3.id')
-		->queryAll();
+//		$ARR['categories'] = Yii::app()->db->createCommand()
+//		->select('t2.id, t2.name , t2.uri, t3.tocatalog')
+//		->from('products_category as t1,  categories AS t2,  sections AS t3')
+//		->where('t1.product_id = '.$ARR['id'].' AND t2.id = t1.category_id AND t2.section_id = t3.id')
+//		->queryAll();
+
+        $ARR['categories'] = Yii::app()->db->createCommand()
+            ->select('t2.id, t2.name , t2.parent_id, t2.uri, t3.tocatalog')
+            ->from('products_category as t1,  categories AS t2,  sections AS t3')
+            ->where('t1.product_id = '.$ARR['id'].' AND t2.id = t1.category_id AND t2.section_id = t3.id')
+            ->queryAll();
 		
 		
 		$ARR['features_products'] = Yii::app()->db->createCommand()
 		->select('t1.variants, t1.admin, t1.price, t1.name, t1.type , t2.*')
 		->from('features as t1,features_products AS t2')
-		->where('t2.product_id = '.$ARR['id'].' AND t2.feature_id = t1.id AND t2.visibly = 1 AND t1.visibly = 1 GROUP by t1.id order by t1.id desc')
+		->where('t2.product_id = '.$ARR['id'].' AND t2.feature_id = t1.id AND t1.visibly = 1 GROUP by t1.id order by t1.id asc')
 		->queryALL();
 
 		$ARR['prices'] = Yii::app()->db->createCommand('SELECT pp.id, pp.price_id, p.name, p.country, p.height, pp.quantity, p.cost FROM products_prices pp LEFT JOIN prices p ON (pp.price_id = p.id) WHERE pp.product_id = ' . $ARR['id'])->queryALL();
+
+//        				echo '<pre>';
+//				print_r($ARR['prices']);
+//				die();
 
 		foreach($ARR['features_products'] as $K => $f){
 			if ($f['price'] == 1){
 				$variants = explode('|', $f['variants']);
 
-				$ARR['feature_price'] = $f;
+
+
+                $isRose = false;
+                $setPrice = false;
+
+				if ($ARR['categories'][0]['id']==$f['cat_id']) {
+                    $ARR['feature_price'] = $f;
+                    $ARR['feature_price']['feature_id'] = $f['feature_id'];
+                    $isRose = true;
+                    $setPrice = true;
+				}
+
+				if (!$isRose) {
+//				    echo '0';
+				    if ($f['cat_id']!=73) {
+//				        echo '1';
+                        $ARR['feature_price'] = $f;
+                        $ARR['feature_price']['feature_id'] = $f['feature_id'];
+                        $setPrice = true;
+				    }
+                }
 
 				unset($ARR['features_products'][$K]);
-				foreach($variants as $K2 => $V) {
+                if ($setPrice) {
+                    foreach($variants as $K2 => $V) {
+                        $ARR['feature_price']['prices'][] = Yii::app()->db->createCommand()
+                            ->select('t1.value, t1.price')
+                            ->from('feature_product_price as t1')
+                            ->where('t1.product_id = '.$ARR['id'].' AND t1.feature_id = '.$f['feature_id'].' AND t1.value = "'.$V.'"')
+                            ->queryRow();
+                    }
+                }
 
-					$ARR['feature_price']['prices'][] = Yii::app()->db->createCommand()
-					->select('t1.value, t1.price')
-					->from('feature_product_price as t1')
-					->where('t1.product_id = '.$ARR['id'].' AND t1.feature_id = '.$f['feature_id'].' AND t1.value = "'.$V.'"')
-					->queryRow();
-				
+                if ($setPrice) {
 
+                }
+				if (empty($newArr)) {
+                    if ($setPrice) {
+//                        echo '3';
+                        $newArr = $ARR;
+                    }
 				}
+
+//                echo '<pre>';
+//                print_r($newArr);
+//                die();
 			}
 		}
 
+//        echo '<pre>';
+//        print_r($newArr);
+//        die();
 
-		if(!in_array(true, $ARR['feature_price']['prices'])){
-			$prod_price = Yii::app()->db->createCommand()
-					->select('t1.price')
-					->from('feature_product_price as t1')
-					->where('t1.product_id = '.$ARR['id'])
-					->queryRow();
+		$ARR = $newArr;
 
-			$ARR['feature_price']['prices'][0] = array(
-						"value"=> '',
-						"price"=> $prod_price['price']
-					);
-		}
+//		if(!in_array(true, $ARR['feature_price']['prices'])){
+//			$prod_price = Yii::app()->db->createCommand()
+//					->select('t1.price')
+//					->from('feature_product_price as t1')
+//					->where('t1.product_id = '.$ARR['id'])
+//					->queryRow();
+//
+//			$ARR['feature_price']['prices'][0] = array(
+//						"value"=> '',
+//						"price"=> $prod_price['price']
+//					);
+//		}
+
+//        if ($ARR['feature_price']['prices']) {
+//            $ARR['price'] = $ARR['feature_price']['prices'][0]['price'];
+//        }
 
 		
 		$action_products = Yii::app()->db->createCommand()
@@ -122,22 +175,33 @@ class AdminModule extends CWebModule
 		->where('t1.prod_id = '.$ARR['id'].'')
 		->queryrow();
 
-		
-		
-		
 // 		/$this->pre($ARR);
 		return $ARR;
 	}
 
 
 
-	public function GetProductFeaturePrice($prod_id) {
-		$ARR = Yii::app()->db->createCommand()
-		->select('t1.*')
-		->from('products AS t1')
-		->where('t1.id = '.$prod_id.'')
-		->queryRow();
+	public function GetProductFeaturePrice($prod_id, $product = false) {
+		if (!$product) {
+			$ARR = Yii::app()->db->createCommand()
+			->select('t1.*')
+			->from('products AS t1')
+			->where('t1.id = '.$prod_id.'')
+			->queryRow();
+		} else {
+			$prod_price = Yii::app()->db->createCommand()
+				->select('t1.price')
+				->from('feature_product_price as t1')
+				->where('t1.product_id = '.$product->id.' ORDER BY t1.price ASC')
+				->queryRow();
 
+			$product->feature_price['prices'][0] = [
+				"value"=> '',
+				"price"=> $prod_price['price']
+			];
+			return $product;
+		}
+/*
 		$ARR['features_products'] = Yii::app()->db->createCommand()
 		->select('t1.variants, t1.admin, t1.price, t1.name, t1.type , t2.*')
 		->from('features as t1,features_products AS t2')
@@ -172,6 +236,17 @@ class AdminModule extends CWebModule
 						"price"=> $prod_price['price']
 					);
 		}
+*/		
+		$prod_price = Yii::app()->db->createCommand()
+			->select('t1.price')
+			->from('feature_product_price as t1')
+			->where('t1.product_id = '.$ARR['id'].' ORDER BY t1.price ASC')
+			->queryRow();
+
+		$ARR['feature_price']['prices'][0] = [
+			"value"=> '',
+			"price"=> $prod_price['price']
+		];
 
 		return $ARR;
 	}
@@ -242,21 +317,105 @@ class AdminModule extends CWebModule
 		->from('categories as t1  ')
 		->where('t1.id  != 0  GROUP by t1.id ORDER BY t1.orders ASC ')
 		->queryALL();
-	
-	
+
 		return $ARR;
 	}
+
+    public function GetMainCategories() {
+
+        $ARR = Yii::app()->db->createCommand()
+            ->select('t1.*')
+            ->from('categories as t1  ')
+            ->where('t1.typeCategory = 1 ORDER BY t1.orders ASC ')
+            ->queryALL();
+
+        return $ARR;
+    }
+
+    public function GetHolidays() {
+
+        $ARR = Yii::app()->db->createCommand()
+            ->select('t1.*')
+            ->from('categories as t1  ')
+            ->where('t1.typeCategory = 0 ORDER BY t1.orders ASC ')
+            ->queryALL();
+
+        return $ARR;
+    }
+
+    public function GetMainCategoriesId($product_id) {
+
+        $ARR = Yii::app()->db->createCommand()
+            ->select('pc.category_id')
+            ->from('products_category as pc,  categories as c,')
+            ->where('pc.product_id = '.$product_id.' and  c.id = pc.category_id and c.typeCategory = 1')
+            ->queryAll();
+
+        return $ARR[0]['category_id'];
+    }
+
+    public function GetHolidayId($product_id) {
+
+        $ARR = Yii::app()->db->createCommand()
+            ->select('pc.category_id')
+            ->from('products_category as pc,  categories as c,')
+            ->where('pc.product_id = '.$product_id.' and  c.id = pc.category_id and c.typeCategory = 0')
+            ->queryAll();
+
+        return $ARR[0]['category_id'];
+    }
 	
 	public function GetAllProducts() {
-	
-		$ARR = Yii::app()->db->createCommand()
-		->select('t1.*')
-		->from('products AS t1')
-		->where('t1.id != "" ORDER BY t1.orders ASC , t1.id DESC ')
-		->queryALL();
+
+		// $ARR = Yii::app()->db->createCommand()
+		// ->select('t1.*')
+		// ->from('products AS t1')
+		// ->where('t1.id != "" ORDER BY t1.orders ASC , t1.id DESC ')
+		// ->limit(10)
+		// ->queryALL();
 		
-		foreach( $ARR as $k => $P) {
+		global $start;
+		$start = microtime(true);
+		
+		$criteria=new CDbCriteria;
+		$criteria->select='*, (select price from feature_product_price fpp where fpp.product_id = t.id ORDER BY fpp.price ASC limit 1) as feature_price';
+		//$criteria->limit = 10;
+		$criteria->order = 't.orders ASC, t.id DESC';
+		$products=Product::model()
+			->with('categories')
+			->findAll($criteria);
+		// echo microtime(true) - $start;exit;
+
+		foreach($products as $k => $product) {
+			//Определяем categories_list
+			$category_list = [];
+			foreach($product->categories as $cat) {
+				$category_list[] = $cat['name'];
+			}
+            $products[$k]->categories_list = implode(', ', $category_list);
 			
+			//Определяем feature_price
+			/*
+			$feature_price_arr = $this->GetProductFeaturePrice($product['id'],$product);
+			$feature_price = 9999999;
+			foreach($feature_price_arr->feature_price['prices'] as $price){
+				if(isset($price['price']) && $price['price'] < $feature_price) $feature_price = $price['price'];
+			}
+			if($feature_price == 9999999) $feature_price = $product['price'];
+			$products[$k]['feature_price'] = $feature_price;
+			*/
+			if (empty($products[$k]->feature_price)) {
+				$products[$k]->feature_price = $product['price'];
+			}
+		}
+		
+		// echo microtime(true) - $start;exit;		
+		// echo '<pre>';
+		// print_r($ARR);
+		// die();
+/*
+		foreach( $ARR as $k => $P) {
+
 			 $categories = Yii::app()->db->createCommand()
 			->select('t2.name')
 			->from('products_category as t1,  categories AS t2')
@@ -268,8 +427,8 @@ class AdminModule extends CWebModule
 			 }
 			 $ARR[$k]['categories_list'] = implode(', ', $category_list);
 		}
-		
-		return $ARR;
+*/
+		return $products;
 	}
 	
 	public function GetAllSections() {
@@ -480,7 +639,7 @@ class AdminModule extends CWebModule
 		$ARR = Yii::app()->db->createCommand()
 		->select('*')
 		->from('pages')
-		->where('id != ""')
+		->where('id != "" and is_visible=1')
 		->queryALL();
 	
 		return $ARR;

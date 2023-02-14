@@ -1,5 +1,6 @@
 <?php
 
+
 // uncomment the following to define a path alias
 // Yii::setPathOfAlias('local','path/to/local-folder');
 
@@ -80,6 +81,7 @@ return array(
                 'sitemap' => 'site/sitemap',
 
                 '<module:admin>' => 'admin/products/list',
+//                'admin/products/product-rose' =>'admin/products/product-rose',
                 '<module:admin>/<controller:\w+>' => 'admin/<controller>/index',
                 '<module:admin>/<controller:\w+>/<action:\w+>' => 'admin/<controller>/<action>',
                 '<module:admin>/<controller:\w+>/<action:\w+>/<id:\d+>' => 'admin/<controller>/<action>/<id:\d+>',
@@ -93,6 +95,8 @@ return array(
                 '<controller:catalog>/<id:\d+>' => 'catalog/index',
                 '<controller:catalog>/<uri:[a-z0-9-_]+>' => 'catalog/index',
                 '<controller:catalog>/<uri:[a-z0-9-_]+>/<id:\d+>' => 'catalog/index',
+                '<controller:catalog>/<uri:[a-z0-9-_]+>/<slice:[a-z0-9-_]+>' => 'catalog/index',
+//                '<controller:catalog>/<uri:[a-z0-9-_]+>/<slice:[a-z0-9-_]+>' => 'catalog/slice',
 
 
                 '<controller:actions>/<id:\d+>' => 'actions/index',
@@ -120,14 +124,31 @@ return array(
         */
         // uncomment the following to use a MySQL database
 
+//        'db' => array(
+//            'connectionString' => 'mysql:host=VH239.spaceweb.ru;dbname=tulip63ru_shop',
+//            'emulatePrepare' => true,
+//            'username' => 'tulip63ru_shop',
+//            'password' => '2L0bXggmG2015',
+//            'charset' => 'utf8',
+//            'tablePrefix' => ''
+//        ),
+
+//        'db' => array(
+//            'connectionString' => 'mysql:host=VH239.spaceweb.ru;dbname=tulip63ru_dev',
+//            'username' => 'tulip63ru_dev',
+//            'password' => 'T4iNRB8J8QX%3YPU',
+//            'charset' => 'utf8',
+//            'tablePrefix' => ''
+//        ),
+
         'db' => array(
-            'connectionString' => 'mysql:host=VH239.spaceweb.ru;dbname=tulip63ru_shop',
-            'emulatePrepare' => true,
-            'username' => 'tulip63ru_shop',
-            'password' => '2L0bXggmG2015',
+            'connectionString' => 'mysql:host=VH239.spaceweb.ru;dbname=tulip63ru_newdev',
+            'username' => 'tulip63ru_newdev',
+            'password' => '_VKUQTLuK8BCKUCY',
             'charset' => 'utf8',
             'tablePrefix' => ''
         ),
+
 
         'errorHandler' => array(
             // use 'site/error' action to display errors
@@ -141,11 +162,10 @@ return array(
                     'levels' => 'error, warning',
                 ),
                 // uncomment the following to show log messages on web pages
-                /*
-                array(
-                    'class'=>'CWebLogRoute',
-                ),
-                */
+//                array(
+//                    'class'=>'CWebLogRoute',
+//                ),
+
             ),
         ),
         'instagram' => array(
@@ -177,9 +197,10 @@ return array(
         // this is used in contact page
         'adminEmail' => 'shny0990@gmail.com',
         'toEmail' => array(
-            'shny0990@gmail.com',
-            'sharapovyura@yandex.ru',
-            'cvetykinel@yandex.ru'
+//            'shny0990@gmail.com',
+            'vp@liderpoiska.ru',
+//            'sharapovyura@yandex.ru',
+//            'cvetykinel@yandex.ru'
         ),
         //'toEmail'=>  array('solovyev@liderpoiska.ru'),
         //'toPhone'=> array(''),

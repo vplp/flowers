@@ -54,6 +54,28 @@ $(function(){
 			  }
 		});	
 	})
+
+	$(".label_desc").focusout(function(){
+		var id = $('h1').attr('id').split('page_')[1]
+		var text = $(this).find('input').val();
+		// var field = $(this).attr('id').split('_')[0];
+		var sendInfo = { stat: 'editfield',
+			value: text,
+			field: 'label_description',
+			id:id,
+			f: 'pages'
+		};
+
+		$.ajax({
+			url: '/admin/update',
+			type: 'POST',
+			dataType: "json",
+			data: sendInfo,
+			success: function(data){
+
+			}
+		});
+	})
 	
 	$('.page_field').change(function(){
 		var id = $('h1').attr('id').split('page_')[1];
@@ -73,6 +95,26 @@ $(function(){
 			  dataType: "json",
 			  data: sendInfo,
 			  success: function(data){}
+		});
+	});
+
+	$('input#page_in_menu').change(function(e){
+		var uri = $('.page_field_uri').val();
+
+		var isVisible;
+		if ($(e.target).attr('checked'))
+			isVisible = 1;
+		else
+			isVisible = 0;
+
+		$(e.target).attr('data-selected', isVisible);
+
+		$.ajax({
+			url: '/admin/update',
+			type: 'POST',
+			data: 'stat=change_page_in_menu&uri='+uri+'&isVisible='+isVisible,
+			success: function(data){
+			}
 		});
 	});
 

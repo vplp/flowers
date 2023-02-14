@@ -1,6 +1,6 @@
 <?php
 define('ERRORS', 1);
-define('DEBUG', TRUE);
+define('DEBUG', false);
 
 if (ERRORS == 1) {
 	ini_set('error_repoting',E_ALL);        //on

@@ -227,20 +227,116 @@
 			</div> 
 			
 		</div>-->
-	<?php foreach ($categories as $c) :?>
-	<?php if (count($c['products']) > 0) :?>
-	<div class="wrap_block resize_block fixed_height  <?if (isset($class)) echo $class;?>  a_load_block">
-		<div class="block_label aloading"><a class="blue"  href="/catalog/<?php echo $c['uri']?>"><?php echo $c['name']?></a><sup>&nbsp;<?php echo Formats::getCountItems($c['count'])?></sup></div>
-			<div id="products_line" class="products_line ">
-				<?php $this->renderPartial('../catalog/items_line', array(
-						'products' => $c['products'],
-						'sort' => false,
-						'catUri' => "/catalog/".$c['uri'],
-						'page' => 'index',
-						'productsCount' => $c['count']
-				));	?>
-			</div>
+    <?php
+//    echo '<pre>';
+//    print_r($categories);
+//    die();
+    ?>
+
+    <?php
+/*
+    //добавляем в categories свойства из прайс-листа для продукта (для рендера на главной)
+    $product_index = 0;
+    foreach ($categories as $cat) {
+        $cat_index = 0;
+        foreach ($cat['products'] as $cat_item) {
+            $product_id = $categories[$product_index]['products'][$cat_index]['id'];
+            $categories[$product_index]['products'][$cat_index]['prices'] = $products[$product_id]['prices'];
+            $cat_index++;
+        }
+        $product_index++;
+    }
+*/
+    $db = Yii::app()->db;
+    $count_byket_in_roses = $db->createCommand('select count(id) as count from products where visible_in_roses=1')->queryScalar();
+/*
+    $promo_info = $db->createCommand('select * from flowers where visible_in_menu=1')->queryRow();
+    $promo_page = $db->createCommand('select * from pages where uri="'.$promo_info['uri'].'"')->queryRow();
+*/
+    $promo_page = $db->createCommand('
+	select p.name, p.uri, f.name f_name
+	from pages p, flowers f
+	where f.visible_in_menu=1 and p.uri=f.uri')->queryRow();
+	// echo '<pre>11';print_r($promo_page2);exit;
+
+    $promo_name = substr_replace($promo_page['f_name'], '', -2);
+
+    $promo = $db->createCommand("
+	select p.*
+	from products as p, features_products as fp
+	WHERE fp.value LIKE '%".$promo_name."%' and fp.product_id=p.id and p.visibly=1
+	group by p.id")->queryAll();
+
+    foreach ($promo as $key => $item) {
+        $promo[$key]['prices'] = $products[$item['id']]['prices'];
+    }
+
+//    echo '<pre>';
+//    print_r($promo_name);
+//    die();
+    ?>
+
+    <?php if (!empty($promo)) {?>
+        <div class="wrap_block resize_block fixed_height  <?if (isset($class)) echo $class;?>  a_load_block">
+            <div class="block_label aloading"><a class="blue"  href="/catalog/byketi/<?php echo $promo_page['uri']?>"><?php echo $promo_page['name']?></a><sup>&nbsp;<?php echo Formats::getCountItems(count($promo))?></sup></div>
+            <div id="products_line" class="products_line ">
+                <?php $this->renderPartial('../catalog/items_line', array(
+                    'products' => $promo,
+                    'sort' => false,
+                    'catUri' => "/catalog/byketi/".$promo_page['uri'],
+                    'page' => 'index',
+                    'productsCount' => count($promo)
+                ));	?>
+            </div>
+        </div>
+    <?php }?>
+
+<?php
+//новый вывод категорий с товарами
+foreach ($cats as $cat) { ?>
+	<?php if (!empty($cat->products)) {
+		$productsCount = count($cat->products);
+		if ($cat->id == 73) {
+			$productsCount += $count_byket_in_roses;
+		}?>
+		<div class="wrap_block resize_block fixed_height  <?if (isset($class)) echo $class;?>  a_load_block">
+			<div class="block_label aloading"><a class="blue"  href="/catalog/<?php echo $cat->uri?>"><?php echo $cat->name?></a><sup>&nbsp;<?php echo Formats::getCountItems($productsCount)?></sup></div>
+				<div id="products_line" class="products_line ">
+					<?php $this->renderPartial('../catalog/items_line_new', array(
+							'products' => $cat->products,
+							'sort' => false,
+							'catUri' => "/catalog/".$cat->uri,
+							'page' => 'index',
+							'productsCount' => $productsCount
+					));	?>
+				</div>
 		</div>
+	<?php
+		}
+	}
+?>
+
+	<?php
+	//код не используется
+	foreach ($categories as $c) :?>
+	    <?php if (!empty($c['products'])) :?>
+	    <?php
+            $productsCount = count($c['products']);
+	        if ($c['id']==73)
+                $productsCount += $count_byket_in_roses;
+	    ?>
+            <div class="wrap_block resize_block fixed_height  <?if (isset($class)) echo $class;?>  a_load_block">
+                <div class="block_label aloading"><a class="blue"  href="/catalog/<?php echo $c['uri']?>"><?php echo $c['name']?></a><sup>&nbsp;<?php echo Formats::getCountItems($productsCount)?></sup></div>
+                    <div id="products_line" class="products_line ">
+                        <?php $this->renderPartial('../catalog/items_line', array(
+                                'products' => $c['products'],
+                                'sort' => false,
+                                'catUri' => "/catalog/".$c['uri'],
+                                'page' => 'index',
+                                'productsCount' => $productsCount
+                        ));	?>
+                    </div>
+            </div>
 		<?php endif;?>
 	<?php endforeach;?>
 

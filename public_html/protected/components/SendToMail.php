@@ -42,7 +42,8 @@ class SendToMail {
 
 		$headers  = 'MIME-Version: 1.0' . "\r\n";
 		$headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
-		$headers .= 'From: '.$from_name.' <shny0990@gmail.com>' . "\r\n";
+//		$headers .= 'From: '.$from_name.' <shny0990@gmail.com>' . "\r\n";
+        $headers .= 'From: '.$from_name.' <vp@liderpoiska.ru>' . "\r\n";
 		
 		mail($to, $subject, $body, $headers);//, '-fnoreply@artcream.ru'
 
@@ -319,7 +320,6 @@ class SendToMail {
 			}
 		}
 
-
 		$ARRfield['id'] = $order['id'];
 		$ARRfield['to_name'] = $order['to_name'];
 		$ARRfield['from_name'] = $order['from_name'];
@@ -340,9 +340,9 @@ class SendToMail {
 					</table>
 		';
 		
-		$this->AddEmailClass();
-		$this->SendOrdertoUser($ARRfield);
-		$this->SendOrdertoAdmin($ARRfield);
+//		$this->AddEmailClass();
+//		$this->SendOrdertoUser($ARRfield);
+//		$this->SendOrdertoAdmin($ARRfield);
 		$this->SendTg($order, $products);
 	}
 	
@@ -374,11 +374,14 @@ class SendToMail {
 		$content .= str_replace('<br>',PHP_EOL,$order['comment']);
 		// $content .= 'Состав: '. PHP_EOL;
 		
-		$chat_id = '-1001207810416';
+//		$chat_id = '-1001207810416';
+        $chat_id = '-1001654614933';
 		
 		require 'vendor/autoload.php';
-		$token = '1436034056:AAFyrdOTVhvNhWxnG1IXtPjeKKNAnQVd_ag';
-		$telegram = new Telegram\Bot\Api($token);
+//		$token = '1436034056:AAFyrdOTVhvNhWxnG1IXtPjeKKNAnQVd_ag';
+        $token = '5778702841:AAFlPeBrLufywF8PqqzXYUViuwBGgd1q0ew';
+
+        $telegram = new Telegram\Bot\Api($token);
 		
 		$res = $telegram->sendMessage(
 			$chat_id,//'chat_id'
@@ -388,6 +391,10 @@ class SendToMail {
 		);
 		
 		$messageId = $res->getMessageId();
+
+//		echo '<pre>';
+//		print_r($orderProducts);
+//		die();
 		
 		foreach ($products as $product) {
 			$contentImg = 'Наименование: '.$product['name']. PHP_EOL;
@@ -425,11 +432,11 @@ class SendToMail {
 		$content .= 'Телефон заказчика: '.$order['to_phone']. PHP_EOL;
 		$content .= 'Телефон получателя: '.$order['from_phone']. PHP_EOL;
 		
-		$chat_id = '-1001207810416';
-		// $chat_id = '837067604';
+//		$chat_id = '-1001207810416';
+        $chat_id = '-1001654614933';
 		require 'vendor/autoload.php';
-		$token = '1436034056:AAFyrdOTVhvNhWxnG1IXtPjeKKNAnQVd_ag';
-		// $token = '5468563351:AAGAhaN1YDz5NaxP6zJcmlbYhcusrA0XbwM';
+//		$token = '1436034056:AAFyrdOTVhvNhWxnG1IXtPjeKKNAnQVd_ag';
+        $token = '5778702841:AAFlPeBrLufywF8PqqzXYUViuwBGgd1q0ew';
 		$telegram = new Telegram\Bot\Api($token);
 		
 		$res = $telegram->sendMessage(

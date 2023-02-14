@@ -3,17 +3,29 @@
 
 <div class="content_left">
 <?php
-if ($_SERVER['REMOTE_ADDR'] =='109.124.222.56') {
-	echo '<pre>';
-	//print_r($ARRitem);	print_r($ARRcat);	print_r($ARRaction);	print_r($Catalog);
-	echo '</pre>';
-}
+//if ($_SERVER['REMOTE_ADDR'] =='109.124.222.56') {
+//	echo '<pre>';
+//	//print_r($ARRitem);	print_r($ARRcat);	print_r($ARRaction);	print_r($Catalog);
+//	echo '</pre>';
+//}
+
+//	echo '<pre>';
+//	print_r($ARRholiday);
+//	die();
+
+//        echo $holidayid;
+//        die();
+
 $this->widget('application.modules.admin.extensions.Admin.OneProduct',array(
 		'ARRitem'=> $ARRitem,
+        'ARRmaincat'=> $ARRmaincat,
+		'ARRmaincat_product' => $ARRmaincat_product,
+		'ARRholidays' => $ARRholidays,
 		'ARRcat'=> $ARRcat,
 		'ARRaction'=> $ARRaction,
 		'features' => $features,
 		'prices' => $prices,
+		'holidayid' => $holidayid
 ));
 ?>
 </div>

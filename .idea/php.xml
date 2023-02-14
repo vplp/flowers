@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PhpIncludePathManager">
+    <include_path>
+      <path value="$PROJECT_DIR$/public_html/vendor/illuminate/contracts" />
+      <path value="$PROJECT_DIR$/public_html/vendor/illuminate/support" />
+      <path value="$PROJECT_DIR$/public_html/vendor/danielstjules/stringy" />
+      <path value="$PROJECT_DIR$/public_html/vendor/paragonie/random_compat" />
+      <path value="$PROJECT_DIR$/public_html/vendor/ralouphie/getallheaders" />
+      <path value="$PROJECT_DIR$/public_html/vendor/psr/http-message" />
+      <path value="$PROJECT_DIR$/public_html/vendor/irazasyed/telegram-bot-sdk" />
+      <path value="$PROJECT_DIR$/public_html/vendor/guzzlehttp/guzzle" />
+      <path value="$PROJECT_DIR$/public_html/vendor/guzzlehttp/psr7" />
+      <path value="$PROJECT_DIR$/public_html/vendor/guzzlehttp/promises" />
+      <path value="$PROJECT_DIR$/public_html/vendor/symfony/polyfill-php72" />
+      <path value="$PROJECT_DIR$/public_html/vendor/symfony/polyfill-intl-normalizer" />
+      <path value="$PROJECT_DIR$/public_html/vendor/doctrine/inflector" />
+      <path value="$PROJECT_DIR$/public_html/vendor/symfony/polyfill-intl-idn" />
+      <path value="$PROJECT_DIR$/public_html/vendor/symfony/polyfill-php70" />
+      <path value="$PROJECT_DIR$/public_html/vendor/composer" />
+    </include_path>
+  </component>
+  <component name="PhpProjectSharedConfiguration" php_language_level="7.0">
+    <option name="suggestChangeDefaultLanguageLevel" value="false" />
+  </component>
+</project>

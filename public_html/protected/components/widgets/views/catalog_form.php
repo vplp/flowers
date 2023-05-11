@@ -125,7 +125,7 @@
 				</label>
 
 			</div>
-
+			<input class="form-input fake" type="text" name="recaptcha_token" autocomplete="no">
 			<button type="button" class="form-btn confirm_apply_btn">Отправить</button>
 		</form>
 

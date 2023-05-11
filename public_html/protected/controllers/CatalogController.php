@@ -43,6 +43,9 @@ class CatalogController extends Controller
         $sql = 'SELECT id  FROM pages WHERE  uri = "'.$slice.'"';
         $flower_is_availability = $db->createCommand($sql)->queryAll();
 
+        if (!empty($slice) and empty($flower_is_availability))
+            throw new CHttpException(404,'Ой, такой страницы нет');
+
         $mono_byket = $db->createCommand('select * from pages where is_mono_byket=1')->queryRow();
 
 
@@ -77,12 +80,15 @@ class CatalogController extends Controller
 //				$sql = 'SELECT c.*, f.name as feature_name, f.variants as feature_variants FROM categories c LEFT JOIN features_category fc ON fc.cat_id = c.id LEFT JOIN features f ON fc.feature_id = f.id  WHERE  f.type="multiselect" AND f.visibly = 1 AND  c.hidden = 0 AND c.uri = "'.$uri.'" GROUP by c.id ORDER by f.id ASC';
                 $category = $db->createCommand($sql)->queryRow();
 
+                if (!empty($uri) and empty($category))
+                    throw new CHttpException(404,'Ой, такой страницы нет');
+
                 if ($category['parent_id'] != 0){
                     $sql = 'SELECT * FROM categories where id = '.$category['parent_id'];
                     $parent_category = $db->createCommand($sql)->queryRow();
-                    $breadcrumbs[$parent_category['uri']] = ['title'=>$parent_category['name'],'url'=>'/catalog/'.$parent_category['uri'].'/'];
+                    $breadcrumbs[$parent_category['uri']] = ['title'=>$parent_category['name'],'url'=>'/catalog/'.$parent_category['uri']];
                 }else{
-                    $breadcrumbs[$category['uri']] = ['title'=>$category['name'],'url'=>'/catalog/'.$category['uri'].'/'];
+                    $breadcrumbs[$category['uri']] = ['title'=>$category['name'],'url'=>'/catalog/'.$category['uri']];
                 }
 
                 $sql = "SELECT page_title FROM categories WHERE uri='".$uri."'";
@@ -92,7 +98,7 @@ class CatalogController extends Controller
                 if (!empty($slice)) {
                     $sql = 'SELECT *  FROM pages WHERE page_title != "" and meta_title != "" and meta_description != "" and uri = "' . $slice . '"';
                     $page = $db->createCommand($sql)->queryRow();
-                    $breadcrumbs[$page['uri']] = ['title'=>$page['page_title'], 'url'=>'/catalog/'.$page['uri'].'/'];
+                    $breadcrumbs[$page['uri']] = ['title'=>$page['page_title'], 'url'=>'/catalog/'.$page['uri']];
 
                     if ($category['id'] == 84) {
                         $sql = "SELECT label_description FROM pages WHERE uri='".$slice."'";
@@ -125,7 +131,7 @@ class CatalogController extends Controller
                     } else
                         $this->pageTitle=$label.'';
 
-                    $breadcrumbs[$C['uri']] = ['title'=>$C['name'], 'url'=>'/catalog/'.$C['uri'].'/'];
+                    $breadcrumbs[$C['uri']] = ['title'=>$C['name'], 'url'=>'/catalog/'.$C['uri']];
                 }
 
 
@@ -179,7 +185,7 @@ class CatalogController extends Controller
 				INNER JOIN categories c ON c.id = pc.category_id
 				WHERE p.is_mono_byket=1 and p.visibly = 1 '.(($uri != '')? 'AND (c.uri = "'.$uri.'" OR c.parent_id='.$parent_id.')' : '').(($GetPice != '')? 'AND p.price <= '.$GetPice : '').'
 				GROUP by p.id
-				ORDER by '.(($GetSort) ? 'p.price '.$GetSort.'' :'p.orders ASC, p.id DESC');
+				ORDER by p.is_ready DESC, p.id DESC, '.(($GetSort) ? 'p.price '.$GetSort.'' :'p.orders ASC');
                 $products = $db->createCommand($sql)->queryAll();
             } else {
 				$sql = 'SELECT p.*, c.uri as cat_uri, c.id as cat_id, c.name cat_name, p.orders, c.parent_id
@@ -188,11 +194,16 @@ class CatalogController extends Controller
 				INNER JOIN categories c ON c.id = pc.category_id
 				WHERE p.visibly = 1 '.(($uri != '')? 'AND (c.uri = "'.$uri.'" OR c.parent_id='.$parent_id.')' : '').(($GetPice != '')? 'AND p.price <= '.$GetPice : '').'
 				GROUP by p.id
-				ORDER by '.(($GetSort) ? 'p.price '.$GetSort.'' :'p.orders ASC, p.id DESC');
+				ORDER by p.is_ready DESC, p.id DESC, '.(($GetSort) ? 'p.price '.$GetSort.'' :'p.orders ASC');
 
 				//$sql = 'SELECT p.*, c.uri as cat_uri, c.id cat_id, c.name cat_name, c.parent_id FROM products p INNER JOIN  products_category pc ON pc.product_id = p.id INNER JOIN categories c ON c.id = pc.category_id WHERE   p.visibly = 1 '.(($uri != '')? 'AND c.uri = "'.$uri.'" OR c.parent_id="'.$parent_id.'"' : '').(($GetPice != '')? 'AND p.price <= '.$GetPice : '').' AND p.img != "" AND p.img != "|" GROUP by p.id ORDER by '.(($GetSort) ? 'p.price '.$GetSort.'' :'p.orders ASC, p.id DESC').' LIMIT '.$offset.','.$limit;
 				$products = $db->createCommand($sql)->queryAll();//' AND c.visibly = 1 '.
 			}
+
+            foreach ($products as $key => $product) {
+                $sql = 'SELECT fpp.price FROM feature_product_price fpp WHERE fpp.value!="" and fpp.feature_id=14 and fpp.product_id = '.$product['id'];
+                $products[$key]['fpp_price'] = $db->createCommand($sql)->queryAll();
+            }
 
 //            echo '<pre>';
 //            print_r($products);
@@ -452,11 +463,11 @@ class CatalogController extends Controller
             if ($product['cat_parent_id'] != 0){
                 $sql = 'SELECT * FROM categories where id = '.$product['cat_parent_id'];
                 $parent_category = $db->createCommand($sql)->queryRow();
-                $breadcrumbs[$parent_category['uri']] = ['title'=>$parent_category['name'],'url'=>'/catalog/'.$parent_category['uri'].'/'];
+                $breadcrumbs[$parent_category['uri']] = ['title'=>$parent_category['name'],'url'=>'/catalog/'.$parent_category['uri']];
 
-                $breadcrumbs[$product['cat_uri']] = ['title'=>$product['cat_name'], 'url'=>'/catalog/'.$product['cat_uri'].'/'];
+                $breadcrumbs[$product['cat_uri']] = ['title'=>$product['cat_name'], 'url'=>'/catalog/'.$product['cat_uri']];
             }else{
-                $breadcrumbs[$product['cat_uri']] = ['title'=>$product['cat_name'], 'url'=>'/catalog/'.$product['cat_uri'].'/'];
+                $breadcrumbs[$product['cat_uri']] = ['title'=>$product['cat_name'], 'url'=>'/catalog/'.$product['cat_uri']];
             }
 
             $ref = array_pop(explode('/', Yii::app()->request->urlReferrer));
@@ -464,20 +475,12 @@ class CatalogController extends Controller
                 $sql = 'SELECT *  FROM pages WHERE page_title != "" and meta_title != "" and meta_description != "" and uri = "' . $ref . '"';
                 $page = $db->createCommand($sql)->queryRow();
                 if (!empty($page)){
-                    $breadcrumbs[$page['uri']] = ['title'=>$page['page_title'], 'url'=>'/catalog/byketi/'.$page['uri'].'/'];
+                    $breadcrumbs[$page['uri']] = ['title'=>$page['page_title'], 'url'=>'/catalog/byketi/'.$page['uri']];
                 }
             }
 
 
             $breadcrumbs['last'] = ['title'=>$product['name'], 'url'=>'last'];
-
-            if (isset($product['meta_title']) && $product['meta_title'] != ''){
-				$this->pageTitle=$product['meta_title'].'';
-				Yii::app()->clientScript->registerMetaTag($product['meta_description'], 'description');
-				Yii::app()->clientScript->registerMetaTag($product['meta_keywords'], 'keywords');
-			} else
-				$this->pageTitle= $product['name'].'';
-
 
 			$sql = 'SELECT fpp.id, fpp.value, fpp.price, fpp.product_id, fpp.feature_id FROM feature_product_price fpp LEFT JOIN features f ON f.id = fpp.feature_id WHERE f.visibly = 1 AND (f.price = "1" OR f.price = 1) AND fpp.product_id = '.$id.'';
 			$product['features_price'] = $db->createCommand($sql)->queryAll();
@@ -590,7 +593,7 @@ class CatalogController extends Controller
 				$product['others'] = array();
 
 			/* product_prices */
-			$sql = 'SELECT t1.price_id, t1.quantity, t2.name, t2.height,t2.cost, t2.country, t2.title FROM products_prices t1 INNER JOIN prices t2 ON t1.price_id = t2.id WHERE product_id = '.$product['id'].'';
+			$sql = 'SELECT t1.price_id, t1.quantity, t2.name, t2.height,t2.cost, t2.country, t2.title FROM products_prices t1 INNER JOIN prices t2 ON t1.price_id = t2.id WHERE product_id = '.$product['id'];
 
 			$product['prices'] = $db->createCommand($sql)->queryAll();
 //            $product['features_price'] = $product['prices'];
@@ -622,11 +625,85 @@ class CatalogController extends Controller
             });
 
 //                        echo '<pre>';
-//            print_r($SortProduct);
+//            print_r($product);
 //            die();
 
 //            echo '<pre>';
 //            die(print_r($breadcrumbs));
+
+//                        Yii::app()->clientScript->registerMetaTag('item_desc', 'description');
+//            Yii::app()->clientScript->registerMetaTag($product['meta_keywords'], 'keywords');
+
+
+//            echo '<pre>';
+//            echo $product['name'];
+//die();
+
+            //ФОРМИРУЕМ МЕТА ДЕСКРИПШН ДЛЯ ТОВАРНОЙ СТРАНИЦЫ
+            if ($product['cat_id']==84 or $product['cat_parent_id']==84 or $product['cat_id']==75 or $product['cat_parent_id']==75) { //букеты или композиции
+                $item_desc = $product['name'].' — купить по честной цене в Кинеле с доставкой по Кинельскому району. Открытка в подарок к каждому заказу!';
+            } elseif ($product['cat_id']==74 or $product['cat_parent_id']==74) { //свадебные букеты
+                $item_desc = $product['name'].' — закажите букет невесты в Доме Цветов на Орджоникидзе и заберите букет самовывозом или с доставкой по Кинельскому району.';
+            } elseif ($product['cat_id']==83 or $product['cat_parent_id']==83) { //подарки
+                $item_desc = 'Закажите '.$product['name']. ' с доставкой по Кинельскому району. Оформите заказ на сайте или по телефону';
+            }
+
+            $deafault_name = "/^Букет\s\d+$/";
+            preg_match('/^Букет\s\d+$/', $product['name'], $is_deafault_name);
+
+            //ФОРМИРУЕМ МЕТА ТАЙТЛ ДЛЯ ТОВАРНОЙ СТРАНИЦЫ
+            if ($product['cat_id']==84 or $product['cat_parent_id']==84 or $product['cat_id']==75 or $product['cat_parent_id']==75) { //букеты или композиции
+
+                $product_name = $product['name'];
+                if ($product['is_mono_byket'] == 1) {
+                    $product_name = str_replace("Букет", "Монобукет", $product['name']);
+                }
+
+                if (!empty($is_deafault_name)) {
+                    $count_iter = 0;
+                    $composition = '';
+                    $length_arr = count($product['prices']);
+                    foreach ($product['prices'] as $price) {
+                        $count_iter++;
+                        if ($count_iter > 3) break;
+                        $composition.=$price['name'].' '.(!empty($price['title']) ? ' '.$price['title'].' ' : '').((!empty($price['country']) ? '('.$price['country'].') ' : '').(!empty($price['height']) ? $price['height'] : '').' - '.(!empty($price['quantity']) ? $price['quantity'].' шт.' : ''));
+
+//                        if ($length_arr >= 3) {
+//                            $count_iter < 3 ? $composition.=', ' : $composition.=' ' ;
+//                        } else {
+//                            if ($length_arr == 1) {$composition.=' ';}
+//                            elseif ($length_arr == 2) {$count_iter == 1 ? $composition.=', ' : $composition.=' ' ;}
+//                        }
+
+                        if ($length_arr >= 3) {$count_iter < 3 ? $composition.=', ' : $composition.=' ' ;}
+                        elseif ($length_arr == 1) {$composition.=' ';}
+                        elseif ($length_arr == 2) {$count_iter == 1 ? $composition.=', ' : $composition.=' ' ;}
+
+                    }
+
+                    $item_title = $product_name.' ('.$composition.') с доставкой в Кинеле';
+                } else {
+                    $item_title = $product_name.' с доставкой в Кинеле';
+                }
+
+            } elseif ($product['cat_id']==74 or $product['cat_parent_id']==74) { //свадебные букеты
+                $item_title = $product['name'].' заказать с доставкой по Кинелю';
+            } elseif ($product['cat_id']==83 or $product['cat_parent_id']==83) { //подарки
+                $item_title = $product['name'].' купить по лучшей цене в Кинеле';
+            } else {
+                $item_title = $product['name'];
+            }
+
+//            Yii::app()->clientScript->registerMetaTag($item_title, 'title');
+            Yii::app()->clientScript->registerMetaTag($item_desc, 'description');
+
+            if (isset($product['meta_title']) && $product['meta_title'] != ''){
+                $this->pageTitle=$item_title.'';
+//                Yii::app()->clientScript->registerMetaTag($item_title, 'title');
+                Yii::app()->clientScript->registerMetaTag($item_desc, 'description');
+            } else
+                $this->pageTitle=$item_title.'';
+
 
             Yii::app()->params['breadcrumbs'] = $breadcrumbs;
 
@@ -710,8 +787,21 @@ class CatalogController extends Controller
 
         $currentPrice = str_replace(' ', '',$_POST['current_price']);
 
+//        echo '<pre>';
+//        print_r($_POST);
+
+        $item_size = '';
+        $sql_size = 'SELECT value FROM feature_product_price WHERE product_id='.$product['id'].' AND price='.$currentPrice;
+        $item_size = $db->createCommand($sql_size)->queryScalar();
+        $temp = explode(" ", $item_size);
+        $item_size = $temp[0];
+
+//                echo '<pre>';
+//        print_r($item_size);
+
 		foreach ($ARR_products as $K => $V){
 			$ARRone = explode(':', $V);
+
 			if ((int)$ARRone[0] == (int)$product['id'] && (int)$currentPrice == (int)$ARRone[1] && (int)$fid == (int)$ARRone[3]) {
 				$ARRone[2] = (int)$ARRone[2] + $count;
 				$count = $ARRone[2];
@@ -721,9 +811,9 @@ class CatalogController extends Controller
 		}
 
 		if ($checkProduct == false)
-            $ARR_products[] = $product['id'].':'.$currentPrice.':'.$_POST['count'].':'.$fid;
+            $ARR_products[] = $product['id'].':'.$currentPrice.':'.$_POST['count'].':'.$fid.':'.$item_size;
 
-//                            echo '<pre>';
+//        echo '<pre>';
 //        print_r($ARR_products);
 
 		$ARR_products = array_diff($ARR_products, array(''));
@@ -763,22 +853,51 @@ class CatalogController extends Controller
 		$del_all_item_line = isset($_GET['all']) && $_GET['all'] == 'true' ? true : false;
 
 
+//        foreach($ARR_products as $K => $V){
+//            $Arrone = explode(':', $V);
+//            if ($Arrone[0] == $id && $Arrone[2] == 1 ){
+//                unset($ARR_products[$K]);
+//
+//            }elseif($Arrone[0] == $id && $del_all_item_line){
+//                unset($ARR_products[$K]);
+//
+//            }elseif($Arrone[0] == $id && (int)$Arrone[2] > 1){
+//                $Arrone[2] = (int)$Arrone[2] - 1;
+//                $ARR_products[$K] = implode(':', $Arrone);
+//
+//            }
+//
+//        }
 
 		foreach($ARR_products as $K => $V){
 			$Arrone = explode(':', $V);
-			if ($Arrone[3] == $id && !$check && $Arrone[2] == 1 ){
-				unset($ARR_products[$K]);
-				$check = true;
-			}elseif($Arrone[3] == $id && $del_all_item_line){
-				unset($ARR_products[$K]);
-				$check = true;
-			}elseif($Arrone[3] == $id && (int)$Arrone[2] > 1){
-				$Arrone[2] = (int)$Arrone[2] - 1;
-				$ARR_products[$K] = implode(':', $Arrone);
-				$check = false;
-			}
-
+			if ($Arrone[3] != 0 ) {
+                if ($Arrone[3] == $id && !$check && $Arrone[2] == 1 ){
+                    unset($ARR_products[$K]);
+                    $check = true;
+                }elseif($Arrone[3] == $id && $del_all_item_line){
+                    unset($ARR_products[$K]);
+                    $check = true;
+                }elseif($Arrone[3] == $id && (int)$Arrone[2] > 1){
+                    $Arrone[2] = (int)$Arrone[2] - 1;
+                    $ARR_products[$K] = implode(':', $Arrone);
+                    $check = false;
+                }
+            } else {
+                if ($Arrone[0] == $id && !$check && $Arrone[2] == 1 ){
+                    unset($ARR_products[$K]);
+                    $check = true;
+                }elseif($Arrone[0] == $id && $del_all_item_line){
+                    unset($ARR_products[$K]);
+                    $check = true;
+                }elseif($Arrone[0] == $id && (int)$Arrone[2] > 1){
+                    $Arrone[2] = (int)$Arrone[2] - 1;
+                    $ARR_products[$K] = implode(':', $Arrone);
+                    $check = false;
+                }
+            }
 		}
+
 		Yii::app()->request->cookies['cart'] = new CHttpCookie('cart', implode('|', $ARR_products));
 		if(Yii::app()->request->isPostRequest){
 

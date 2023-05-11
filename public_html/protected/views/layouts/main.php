@@ -8,7 +8,7 @@
 <!--    <meta name='robots' content='noindex'/>-->
 	<link rel="icon" href="/favicon.ico" type="image/x-icon">
 	<title><?php echo $this->pageTitle ?></title>
-	
+
 	<link href="/css/template.css?v=6" type="text/css" rel="stylesheet" />
 	<link href='https://fonts.googleapis.com/css?family=PT+Serif:400,700&subset=latin,cyrillic-ext,cyrillic' rel='stylesheet' type='text/css'>
 		<!--[if lt IE 8 ]>
@@ -291,11 +291,18 @@
   <?php if(!empty(Yii::app()->params['breadcrumbs']) && count(Yii::app()->params['breadcrumbs'])>2): ?>
       <div class="breadcrumbs">
           <div class="breadcrumbs-items">
-              <?php foreach(Yii::app()->params['breadcrumbs'] as $crumb): ?>
-                  <div class="breadcrumbs-item">
-                      <a href="<?= $crumb['url'] ?>" class="breadcrumbs-link"><?= $crumb['title'] ?></a>
-                      <img src="/img/icon/arrow_right_breadcrumb.svg" alt="" class="breadcrumbs-svg">
-                  </div>
+              <?php
+              $count = count(Yii::app()->params['breadcrumbs']);
+              foreach(Yii::app()->params['breadcrumbs'] as $crumb): ?>
+                  <?php if(--$count <= 0) {
+                      break;
+                  }?>
+                    <?php if(!empty($crumb)) {?>
+                        <div class="breadcrumbs-item">
+                            <a href="<?= $crumb['url'] ?>" class="breadcrumbs-link"><?= $crumb['title'] ?></a>
+                            <img src="/img/icon/arrow_right_breadcrumb.svg" alt="" class="breadcrumbs-svg">
+                        </div>
+                    <?php } ?>
               <?php endforeach; ?>
           </div>
       </div>
@@ -363,5 +370,6 @@
 <div class="popup-success-pink-form-wrap">
 
 </div>
+  <script type="text/javascript" src="https://spikmi.org/Widget?id=16264"></script>
 </body>
 </html>

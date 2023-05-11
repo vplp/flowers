@@ -17,7 +17,6 @@
     //sorting products of season and order type
     $sort_products = $products;
 
-
     foreach ($products as $key => $product) {
         if (in_array($product['id'], $prod_season_ids) && !in_array($product['id'], $prod_order_ids)) {
             unset($products[$key]);
@@ -74,7 +73,7 @@
             }
         }
 
-        $product['feature_value'] = $product['feature_value'] ? $product['feature_value'] : 'none'
+        $product['feature_value'] = $product['feature_value'] ? $product['feature_value'] : 'none';
 
         ?>
         <div class="item ani_box aloading ias_child a_end" <?php if (Yii::app()->user->getState('auth')) echo 'id="item_' . $product['id'] . '"' ?>>
@@ -82,9 +81,14 @@
             <!--<a href="/catalog/<?php //echo $product['cat_uri']?>/<?php //echo $product['id']?>">
                         <img src="/uploads/300x300/<?php //echo current($Arrimg);?>" class=" ">
                     </a> -->
-            <a href="/catalog/<?php echo $product['id'] ?>">
-                <img src="/uploads/300x300/<?php echo current($Arrimg); ?>" class=" ">
-            </a>
+
+                <a href="/catalog/<?php echo $product['id'] ?>">
+                    <?php if ($is_view == true) {?>
+                        <img src="/uploads/300x300/<?php echo current($Arrimg); ?>" class=" ">
+                    <?php } else {?>
+                        <img src="/uploads_water_new/300x300/<?php echo str_replace('.jpg', '.webp', current($Arrimg)); ?>" class=" ">
+                    <?php } ?>
+                </a>
 
             <input type="hidden" class="sortprice" value="<?php echo $product['price'] ?>">
 
@@ -105,49 +109,76 @@
                 ?>
 
                 <?php if(!empty($product)):?>
-                    <?php if ($product['prices'] && $product['price']>$product['visible_cost']):?>
-                        <span class="item_price"><?php echo number_format(($product['price']), 0, ',', ' '); ?>
-                            <span class="b-rub">Р</span>
-                        </span>
-                    <?php elseif ($product['visible_cost']):?>
-                        <?php if ($product['cat_id']==73 && (count($product['prices'])>1 || count($features_value_rose)>1)):?>
-                            <span>от </span>
-                            <span class="item_price"><?php echo number_format(($product['visible_cost']), 0, ',', ' '); ?>
+                    <?php if($product['cat_id']!=73):?>
+                        <?php if(!empty($product['fpp_price']) and $product['fpp_price'][0]['price']>0 ):?>
+                            <span class="item_price"><?php echo number_format(($product['fpp_price'][0]['price']), 0, ',', ' '); ?>
                                 <span class="b-rub">Р</span>
                             </span>
-                            <span> за шт.</span>
                         <?php else:?>
-                            <?php if ($product['cat_id']==73) {?>
-                                <span class="item_price"><?php echo number_format(($product['visible_cost']), 0, ',', ' '); ?>
-                                    <span class="b-rub">Р</span>
-                                </span>
-                                <span> за шт.</span>
-                            <?php } else {?>
-                                <span class="item_price"><?php echo number_format(($product['price']), 0, ',', ' '); ?>
-                                    <span class="b-rub">Р</span>
-                                </span>
-                            <?php }?>
+                            <span class="item_price"><?php echo number_format(($product['price']), 0, ',', ' '); ?>
+                                <span class="b-rub">Р</span>
+                            </span>
                         <?php endif;?>
                     <?php else:?>
-
-                        <?php if ($product['cat_id']==73 && (count($product['prices'])>1 || count($features_value_rose)>1)):?>
+                        <?php if(count($product['prices'])>1 || count($features_value_rose)>1):?>
                             <span>от </span>
-                            <span class="item_price"><?php echo number_format(($product['price']), 0, ',', ' '); ?>
-                                <span class="b-rub">Р</span>
-                            </span>
-                            <span> за шт.</span>
-                        <?php elseif ($product['cat_id']==73):?>
                             <span class="item_price"><?php echo number_format(($product['price']), 0, ',', ' '); ?>
                                 <span class="b-rub">Р</span>
                             </span>
                             <span> за шт.</span>
                         <?php else:?>
                             <span class="item_price"><?php echo number_format(($product['price']), 0, ',', ' '); ?>
-                                <span class="b-rub">Р</span>
-                            </span>
+                                    <span class="b-rub">Р</span>
+                                </span>
+                            <span> за шт.</span>
                         <?php endif;?>
+                    <?php endif;?>
                 <?php endif;?>
-                <?php endif;?>
+
+<!--                --><?php //if(!empty($product)):?>
+<!--                    --><?php //if ($product['prices'] && $product['price']>$product['visible_cost']):?>
+<!--                        <span class="item_price">--><?php //echo number_format(($product['price']), 0, ',', ' '); ?>
+<!--                            <span class="b-rub">Р</span>-->
+<!--                        </span>-->
+<!--                    --><?php //elseif ($product['visible_cost']):?>
+<!--                        --><?php //if ($product['cat_id']==73 && (count($product['prices'])>1 || count($features_value_rose)>1)):?>
+<!--                            <span>от </span>-->
+<!--                            <span class="item_price">--><?php //echo number_format(($product['visible_cost']), 0, ',', ' '); ?>
+<!--                                <span class="b-rub">Р</span>-->
+<!--                            </span>-->
+<!--                            <span> за шт.</span>-->
+<!--                        --><?php //else:?>
+<!--                            --><?php //if ($product['cat_id']==73) {?>
+<!--                                <span class="item_price">--><?php //echo number_format(($product['visible_cost']), 0, ',', ' '); ?>
+<!--                                    <span class="b-rub">Р</span>-->
+<!--                                </span>-->
+<!--                                <span> за шт.</span>-->
+<!--                            --><?php //} else {?>
+<!--                                <span class="item_price">--><?php //echo number_format(($product['price']), 0, ',', ' '); ?>
+<!--                                    <span class="b-rub">Р</span>-->
+<!--                                </span>-->
+<!--                            --><?php //}?>
+<!--                        --><?php //endif;?>
+<!--                    --><?php //else:?>
+<!---->
+<!--                        --><?php //if ($product['cat_id']==73 && (count($product['prices'])>1 || count($features_value_rose)>1)):?>
+<!--                            <span>от </span>-->
+<!--                            <span class="item_price">--><?php //echo number_format(($product['price']), 0, ',', ' '); ?>
+<!--                                <span class="b-rub">Р</span>-->
+<!--                            </span>-->
+<!--                            <span> за шт.</span>-->
+<!--                        --><?php //elseif ($product['cat_id']==73):?>
+<!--                            <span class="item_price">--><?php //echo number_format(($product['price']), 0, ',', ' '); ?>
+<!--                                <span class="b-rub">Р</span>-->
+<!--                            </span>-->
+<!--                            <span> за шт.</span>-->
+<!--                        --><?php //else:?>
+<!--                            <span class="item_price">--><?php //echo number_format(($product['price']), 0, ',', ' '); ?>
+<!--                                <span class="b-rub">Р</span>-->
+<!--                            </span>-->
+<!--                        --><?php //endif;?>
+<!--                --><?php //endif;?>
+<!--                --><?php //endif;?>
 
                 <?php if ($page !== 'index') {
                     /*
@@ -164,10 +195,14 @@
                     $checkProduct = !empty($cartProductIds[(int)$product['id']]);
 
                     ?>
+                    <?php if(($product['is_ready'] == 1 || $product['cat_id']==73))  { ?>
                     <div class="item_add_to_cart d-flex">
                         <a class="<?php echo $checkProduct ? 'in_cart' : 'addtocart'; ?>"
                            href="<?php echo $checkProduct ? '/cart' : '/catalog/add/' . $product['id'] . (($fid != '') ? '?fid=' . $fid : ''); ?>"><?php echo $checkProduct ? 'В корзине' : 'В корзину'; ?></a>
                     </div>
+                    <?php } else {?>
+                        <div class="not_order">Недоступно для заказа</div>
+                    <?php }?>
                 <?php } ?>
 
             </div>

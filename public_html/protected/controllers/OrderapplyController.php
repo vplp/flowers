@@ -10,6 +10,38 @@ class OrderapplyController extends Controller
 	{
 		if(!Yii::app()->request->isPostRequest || !isset($_POST['Order']))
 			throw new CHttpException(404,'Страница не найдена');
+		
+		//$key = '6LcwSyAlAAAAAPnpz8q_gtA-j-iTcJMNswI4K6aS';
+		$secret = '6LcwSyAlAAAAAI-g2ejkogAnezOYgC85i6CJEC-4';
+        $params = array('secret'=>$secret,'response'=>$_POST['recaptcha_token']);
+        $options = array(
+            'http' => array(
+                'header' => "Content-type: application/x-www-form-urlencoded\r\n",
+                'method' => 'POST',
+                'content' => http_build_query($params, '', '&'),
+                // Force the peer to validate (not needed in 5.6.0+, but still works)
+                'verify_peer' => true,
+            ),
+        );
+        $context = stream_context_create($options);
+        $raw = file_get_contents('https://www.google.com/recaptcha/api/siteverify', false, $context);
+        $response = json_decode($raw,true);
+
+        $g_recaptcha_response_check = false;
+        
+        if (($response["success"] and $response["score"] >= 0.5 )) {
+        	$g_recaptcha_response_check = true;
+        }
+        if(!$g_recaptcha_response_check) {
+            echo CJSON::encode(array(
+				'error' => 1,
+				'id'=> 0,
+				'message' =>'<span class="error">Ошибка Бот</span>',
+				'resp' => CJSON::encode($response)
+			));
+            exit;
+        }
+		
 		$p = new CHtmlPurifier;
 
 		if (isset($_POST['user-name']) && $_POST['user-name'] != '') {
@@ -105,7 +137,8 @@ class OrderapplyController extends Controller
 							'budget' => $order->budget,
 							'color_gamma' => $order->color_gamma,
 							'sostav_buketa' => $order->sostav_buketa,
-							'comment' => $comment
+							'comment' => $comment,
+							'response' => $response
 						)
 				));
 			

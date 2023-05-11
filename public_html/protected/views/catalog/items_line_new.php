@@ -53,7 +53,7 @@
                         <img src="/uploads/300x300/<?php //echo current($Arrimg);?>" class=" ">
                     </a> -->
             <a href="/catalog/<?php echo $product['id'] ?>">
-                <img src="/uploads/300x300/<?php echo current($Arrimg); ?>" class=" ">
+                <img src="/uploads/300x300/<?php echo current($Arrimg); ?>" class=" " loading="lazy">
             </a>
 
             <input type="hidden" class="sortprice" value="<?php echo $product['price'] ?>">

@@ -13,7 +13,7 @@ class SendToMail {
 	}
 	
 	public function SendMail($to , $body, $subject, $from, $from_name, $PathToFile = '', $file = '') {
-			
+
 		
 	
 // 		$mail = new PHPMailer();
@@ -42,9 +42,9 @@ class SendToMail {
 
 		$headers  = 'MIME-Version: 1.0' . "\r\n";
 		$headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
-//		$headers .= 'From: '.$from_name.' <shny0990@gmail.com>' . "\r\n";
-        $headers .= 'From: '.$from_name.' <vp@liderpoiska.ru>' . "\r\n";
-		
+		$headers .= 'From: '.$from_name.' <shny0990@gmail.com>' . "\r\n";
+//        $headers .= 'From: '.$from_name.' <vp@liderpoiska.ru>' . "\r\n";
+
 		mail($to, $subject, $body, $headers);//, '-fnoreply@artcream.ru'
 
 	    
@@ -242,7 +242,7 @@ class SendToMail {
 	}
 	
 	
-	public function SendOrder($order){
+	public function SendOrder($order, $sizes = []){
 	
 		$ArrProd = explode('|', $order['products_id']);
 		$line_where = array();
@@ -341,9 +341,9 @@ class SendToMail {
 		';
 		
 //		$this->AddEmailClass();
-//		$this->SendOrdertoUser($ARRfield);
-//		$this->SendOrdertoAdmin($ARRfield);
-		$this->SendTg($order, $products);
+		$this->SendOrdertoUser($ARRfield);
+		$this->SendOrdertoAdmin($ARRfield);
+		$this->SendTg($order, $products, $sizes);
 	}
 	
 	public function Html2Pdf($content){
@@ -356,7 +356,7 @@ class SendToMail {
 		
 	}
 	
-	public function SendTg($order, $products) {
+	public function SendTg($order, $products, $sizes) {
 		$orderItems = explode('|',$order['products_id']);
 		$orderProducts = array();
 		foreach ($orderItems as $orderItemStr) {
@@ -364,43 +364,46 @@ class SendToMail {
 			$orderProducts[$orderItem[0]] = $orderItem;
 			//0-id,1-sum,2-number
 		}
-		
+
+//      echo '<pre>';
+//		print_r($products);
+//		die();
+
 		$content = 'Заказ №: '. $order['id']. PHP_EOL;
 		$content .= 'Имя заказчика: '.$order['to_name']. PHP_EOL;
 		$content .= 'Имя получателя: '.$order['from_name']. PHP_EOL;
-		$content .= 'Телефон заказчика: '.$order['to_phone']. PHP_EOL;
-		$content .= 'Телефон получателя: '.$order['from_phone']. PHP_EOL;
+		$content .= 'Телефон заказчика: '.str_replace([' ', '(', ')', '-'], '',  $order['to_phone']). PHP_EOL;
+		$content .= 'Телефон получателя: '.str_replace([' ', '(', ')', '-'], '',  $order['to_phone']). PHP_EOL;
 		// $content .= 'Сумма: '.number_format($order['price'], 0, ',', ' ' ).' р'. PHP_EOL;
 		$content .= str_replace('<br>',PHP_EOL,$order['comment']);
 		// $content .= 'Состав: '. PHP_EOL;
-		
+
 		$chat_id = '-1001207810416';
 //        $chat_id = '-1001654614933';
-		
+
 		require 'vendor/autoload.php';
 		$token = '1436034056:AAFyrdOTVhvNhWxnG1IXtPjeKKNAnQVd_ag';
 //        $token = '5778702841:AAFlPeBrLufywF8PqqzXYUViuwBGgd1q0ew';
 
         $telegram = new Telegram\Bot\Api($token);
-		
+
 		$res = $telegram->sendMessage(
 			$chat_id,//'chat_id'
 			$content,//'text'
 			true//disable_web_page_preview,
-			
+
 		);
-		
+
 		$messageId = $res->getMessageId();
 
-//		echo '<pre>';
-//		print_r($orderProducts);
-//		die();
-		
 		foreach ($products as $product) {
 			$contentImg = 'Наименование: '.$product['name']. PHP_EOL;
 			$contentImg .= 'Количество: '.$orderProducts[$product['id']][2].' шт'. PHP_EOL;
 			$contentImg .= 'Цена: '.number_format($orderProducts[$product['id']][1], 0, ',', ' ' ).' р'. PHP_EOL;
-			$contentImg .= 'Ссылка: https://flowersvillage.ru/catalog/'.$product['cat_uri'].'/'.$product['id'];
+			if ($sizes[$product['id']] and !empty($sizes[$product['id']])) {
+			    $contentImg .= 'Размер: '.number_format($sizes[$product['id']]).' см'. PHP_EOL;
+            }
+			$contentImg .= 'Ссылка: https://flowersvillage.ru/catalog/'.$product['id'];
 			$imgArr = explode('|', $product['img']);
 			if (count($imgArr) > 1) {
 				$img = 'https://flowersvillage.ru/uploads/460x460'.$imgArr[1];
@@ -422,15 +425,15 @@ class SendToMail {
 	}
 	public function SendTgQuickForm($order, $comment) {
 		
-		$content = 'Заказ на сборку букета №и' . $order['id'] . PHP_EOL;
+		$content = 'Заказ на сборку букета № ' . $order['id'] . PHP_EOL;
 		$content .= 'Бюджет: '. $order['budget']. ' р.' . PHP_EOL;
 		$content .= 'Цветовая гамма: '. $order['color_gamma']. PHP_EOL;
 		$content .= 'Состав букета: '. $order['sostav_buketa']. PHP_EOL;
 		$content .= $comment;
 		$content .= 'Имя заказчика: '.$order['to_name']. PHP_EOL;
 		$content .= 'Имя получателя: '.$order['from_name']. PHP_EOL;
-		$content .= 'Телефон заказчика: '.$order['to_phone']. PHP_EOL;
-		$content .= 'Телефон получателя: '.$order['from_phone']. PHP_EOL;
+		$content .= 'Телефон заказчика: '.str_replace([' ', '(', ')', '-'], '',  $order['to_phone']). PHP_EOL;
+		$content .= 'Телефон получателя: '.str_replace([' ', '(', ')', '-'], '',  $order['to_phone']). PHP_EOL;
 		
 		$chat_id = '-1001207810416';
 //        $chat_id = '-1001654614933';

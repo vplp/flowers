@@ -232,6 +232,7 @@ class SiteController extends Controller
             if ($V != '') {
                 $Arrone = explode(':', $V);
                 $products[$i] = $IDproduct[$Arrone[0]];
+                $products[$i]['pid'] = $Arrone[0];
                 $products[$i]['price'] = $Arrone[1];
                 $products[$i]['count'] = $Arrone[2];
                 $products[$i]['fid'] = $Arrone[3];

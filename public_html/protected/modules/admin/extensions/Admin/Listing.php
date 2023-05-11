@@ -85,7 +85,7 @@ class Listing extends CWidget
 //                        echo '<pre>';
 //                        print_r(current($ARR_img));
 
-                        $td_line .= '<td style="' . $style_td . '" class="th' . $k . ' image_td" id="' . $this->id_table . '_' . $item['id'] . '_' . $field['name'] . '"><a class="non" href="/admin/' . $this->id_table . '/edit/' . $item['id'] . '"><img width="36" height="36" src="/uploads/81x84' . current($ARR_img) . '"</a></td>';
+                        $td_line .= '<td style="' . $style_td . '" class="th' . $k . ' image_td" id="' . $this->id_table . '_' . $item['id'] . '_' . $field['name'] . '"><a class="non" href="/admin/' . $this->id_table . '/edit/' . $item['id'] . '"><img width="36" height="36" src="/uploads/81x84' . current($ARR_img) . '" loading="lazy"></a></td>';
                     } else if ($field['name'] == 'price') {
                         $product_price = $item['price_update'] > 0 ? number_format(($item[$field['name']]), 0, ',', ' ') : 0;
                         $td_line .= '<td style="' . $style_td . '" class="th' . $k . ' price_td" id="' . $this->id_table . '_' . $item['id'] . '_' . $field['name'] . '">' . $product_price . ' рублей</td>';

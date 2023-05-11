@@ -57,13 +57,23 @@ $url = Yii::app()->request->url;
     }
 
     $flowerInMenu = $db->createCommand("SELECT * FROM flowers as f WHERE f.visible_in_menu = 1 LIMIT 1")->queryRow();
+    $flowers_is_not_ready = $db->createCommand("SELECT id, name, COUNT(name) as name_count, SUM(`order`) as order_sum FROM `prices` GROUP BY name HAVING order_sum > 0 and name_count = order_sum;")->queryAll();
 
-    $flowersInFilter = array_filter($flowersInFilter, function ($data) use ($tmp){
-        foreach ($tmp as $item) {
-            $pos = strpos($item, $data['name']);
-            if ($pos !== false)
-                return $data['name'];
-        }
+    $flowersInFilter = array_filter($flowersInFilter, function ($data) use ($tmp, $flowers_is_not_ready){
+        $bool = true;
+
+        foreach ($flowers_is_not_ready as $item)
+            if ($data['name'] == $item['name']){
+                $bool = false;
+                break;
+            }
+
+        if ($bool == true)
+            foreach ($tmp as $item) {
+                $pos = strpos($item, $data['name']);
+                if ($pos !== false)
+                    return $data['name'];
+            }
     });
 
 //    echo '<pre>';

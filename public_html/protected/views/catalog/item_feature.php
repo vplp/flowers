@@ -14,7 +14,7 @@
    
 			foreach($product_prices as $price){
 				$country = $price['country'] ? '('.$price['country'].')' : '';
-				echo '<div>'.$price['name']. ' ' . $country . ' '.$price['height']. ' — ' .$price['quantity'] . ' шт.</div>';
+				echo '<div>'.$price['name']. ' ' .$price['title']. ' ' . $country . ' '.$price['height']. ' — ' .$price['quantity'] . ' шт.</div>';
 			}
 
 		}

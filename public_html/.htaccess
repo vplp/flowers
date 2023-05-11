@@ -2,6 +2,9 @@ Options +FollowSymLinks
 IndexIgnore */*
 RewriteEngine on
 
+RewriteCond %{REQUEST_URI} ^(.+)/$
+RewriteRule .* https://%{HTTP_HOST}%1 [R=301,L,QSA]
+
 #RewriteCond %{HTTP_HOST} ^xn--b1aaibaqnkq0c1b1d.xn--p1ai$
 RewriteCond %{HTTP_HOST} !^flowersvillage.ru$
 RewriteRule (.*) https://flowersvillage.ru/$1 [L,R=301,QSA]
@@ -10,20 +13,21 @@ RewriteCond %{HTTPS} off
 RewriteCond %{HTTP:X-Forwarded-Proto} !https
 RewriteRule ^(.*)$ https://flowersvillage.ru%{REQUEST_URI} [L,R=301]
 
-RewriteCond %{REQUEST_URI} ^/(catalog)/(.*)/(.+)$
-RewriteCond %{REQUEST_URI} !^/catalog/byketi
-RewriteCond %{REQUEST_URI} !^/catalog/add
-RewriteCond %{REQUEST_URI} !^/catalog/delete
-RewriteRule ^(.*)$ https://flowersvillage.ru/%1/%3 [R=301,L]
+#RewriteCond %{REQUEST_URI} ^/catalog/byketi/([0-9]*)$
+#RewriteRule ^(.*)$ https://flowersvillage.ru/catalog/%1 [R=302,L]
 
+#RewriteCond %{REQUEST_URI} ^/(catalog)/(.*)/(.+)$
+#RewriteCond %{REQUEST_URI} !^/catalog/byketi
+#RewriteCond %{REQUEST_URI} !^/catalog/add
+#RewriteCond %{REQUEST_URI} !^/catalog/delete
+#RewriteRule ^(.*)$ https://flowersvillage.ru/%1/%3 [R=302,L]
 
-#<FilesMatch "\.(jpg|jpeg|JPG)$"> 
+#<FilesMatch "\.(jpg|jpeg|JPG)$">
 #   RewriteCond %{REQUEST_URI} ^/uploads/(.*)$
-#   RewriteCond %{REQUEST_FILENAME} -f 
+#   RewriteCond %{REQUEST_FILENAME} -f
 #   RewriteCond %{REQUEST_URI} !^/uploads//
-#   RewriteRule ^(.*)$ /watermark/watermark.php [T=application/x-httpd-#php,L,QSA] 
-#</FilesMatch> 
-
+#   RewriteRule ^(.*)$ /watermark/watermark.php [T=application/x-httpd-#php,L,QSA]
+#</FilesMatch>
 
 # if a directory or a file exists, use it directly
 RewriteCond %{REQUEST_FILENAME} !-f

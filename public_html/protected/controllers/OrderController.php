@@ -16,10 +16,12 @@ class OrderController extends Controller
         $cart = (string)Yii::app()->request->cookies['cart'];
         $ARR_products = explode('|', $cart);
         $price = 0;
+        $sizes = [];
         foreach ($ARR_products as $K => $product) {
             $Arrone = explode(':', $product);
 
             $price += (int)$Arrone[1] * (int)$Arrone[2];
+            $sizes[(int)$Arrone[0]] = (int)$Arrone[4];
         }
 
         $Order = $_POST['Order'];
@@ -44,11 +46,14 @@ class OrderController extends Controller
 
         $order->products_id = $cart;
         $order->price = $price;
+
+//        $order->size = $sizes;
+
         $order->discount_price = $price;
         $comment = '';
 
 //		echo '<pre>';
-//		print_r($order);
+//		print_r($sizes);
 //		die();
 
         if (!empty($Order['delivery_type'])) {
@@ -78,8 +83,8 @@ class OrderController extends Controller
 
         if ($order->save(false)) {
             Yii::app()->request->cookies['cart'] = new CHttpCookie('cart', '');
-//            $mail = new SendToMail();
-//            $mail->SendOrder($order);
+            $mail = new SendToMail();
+            $mail->SendOrder($order, $sizes);
             echo CJSON::encode(array(
                 'error' => 0,
                 'id' => $order->id,

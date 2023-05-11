@@ -198,9 +198,10 @@ return array(
         'adminEmail' => 'shny0990@gmail.com',
         'toEmail' => array(
             'shny0990@gmail.com',
-//            'vp@liderpoiska.ru',
             'sharapovyura@yandex.ru',
-            'cvetykinel@yandex.ru'
+            'cvetykinel@yandex.ru',
+//            'vp@liderpoiska.ru',
+			'solovyev@liderpoiska.ru',
         ),
         //'toEmail'=>  array('solovyev@liderpoiska.ru'),
         //'toPhone'=> array(''),

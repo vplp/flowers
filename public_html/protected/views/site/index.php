@@ -276,7 +276,7 @@
 //    die();
     ?>
 
-    <?php if (!empty($promo)) {?>
+    <?php if (!empty($promo) && !empty($promo_page['name'])) {?>
         <div class="wrap_block resize_block fixed_height  <?if (isset($class)) echo $class;?>  a_load_block">
             <div class="block_label aloading"><a class="blue"  href="/catalog/byketi/<?php echo $promo_page['uri']?>"><?php echo $promo_page['name']?></a><sup>&nbsp;<?php echo Formats::getCountItems(count($promo))?></sup></div>
             <div id="products_line" class="products_line ">

@@ -395,21 +395,45 @@ $(function () {
 
     function detachForm(countBlocks) {
 
-        if ($('.s_sm_img').hasClass('select')) {
+        if ($('.item')[0] && $('.catalog-page'))  {
+            let widthContent = $('.catalog-page').width();
+            let widthItem = $('.item').width();
+            let marginItem = parseInt($('.item')[0].style.marginLeft) * 2;
+
+            if ($('body').width() < 425)
+                marginItem = 0;
+
+            widthItem = widthItem + marginItem;
+
+            let countItemsInRow = Math.floor(widthContent / widthItem);
+            let countItemsBeforeForm = countItemsInRow * 3;
+
             countBlocks = {
-                mobile: 6,
-                planshet: 12,
-                desctopsm: 15,
-                desctopxl: 21
+                mobile: countItemsBeforeForm,
+                planshet: countItemsBeforeForm,
+                desctopsm: countItemsBeforeForm,
+                desctopxl: countItemsBeforeForm
             };
-        } else {
-            countBlocks = {
-                mobile: 6,
-                planshet: 9,
-                desctopsm: 12,
-                desctopxl: 15
-            };
+
         }
+
+        // console.log('countItemsInRow', countItemsInRow);
+
+        // if ($('.s_sm_img').hasClass('select')) {
+        //     countBlocks = {
+        //         mobile: 6,
+        //         planshet: 12,
+        //         desctopsm: 15,
+        //         desctopxl: 21
+        //     };
+        // } else {
+        //     countBlocks = {
+        //         mobile: 6,
+        //         planshet: 9,
+        //         desctopsm: 12,
+        //         desctopxl: 15
+        //     };
+        // }
 
         const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
         let form = $('.products_line .flower_order_form_wrap').detach();
@@ -422,7 +446,6 @@ $(function () {
             $('.catalog-page').append(collectionsBuketi);
             return false;
         }
-
 
         if (!$('.catalog-page').hasClass('index')) {
             $(items).each(function (i) {
@@ -2370,8 +2393,19 @@ $(document).ready(function () {
     $('.header-geo-js').on('click', function () {
         customScroll('.header-geo-js', 0);
     });
-
-    $('.flower_order_form_btn').on('click', function () {
+	
+	site_key = '6LcwSyAlAAAAAPnpz8q_gtA-j-iTcJMNswI4K6aS';
+    $('.form-input').on('focus', function () {
+		if (typeof(grecaptcha) == 'undefined') {
+			console.log('init grecaptcha')
+			var grecaptcha_s = document.createElement('script');
+			grecaptcha_s.src = 'https://www.google.com/recaptcha/api.js?render='+site_key;
+	
+			var grecaptcha_h = document.getElementsByTagName('script')[0];
+			grecaptcha_h.parentNode.insertBefore(grecaptcha_s,grecaptcha_h);
+		}
+	});		
+    $('.flower_order_form_btn').on('click', function () {		
         $(this).closest('.flower_order_form_wrap').find('.flower_order_form_form').toggleClass('active');
         if ($('.flower_order_form_form').hasClass('active')) {
             customScroll('.flower_order_form_btn', -130);
@@ -2509,7 +2543,7 @@ $(document).ready(function () {
 
         var check = true;
 
-        form.find('.form-input').each(function () {
+        form.find('.form-input').not('.fake').each(function () {
 
             if ($(this).attr('id') !== 'field_text-otkritki') {
 
@@ -2534,53 +2568,60 @@ $(document).ready(function () {
             if (protectInput && protectInput != '') {
                 return false;
             }
-            form.ajaxSubmit({
-                success: function (response) {
-                    data = $.parseJSON(response);
-                    if (data.error == 0) {
-                        form.find('input,textarea').val('');
-                        form.addClass('sended');
-                        yaCounter24162886.reachGoal('orderdone');
+			grecaptcha.ready(function() {
+				grecaptcha.execute(site_key, {action: 'submit'}).then(function(token) {
+					console.log('token', token)
+					$('[name=recaptcha_token]').val(token)
+					form.ajaxSubmit({
+						success: function (response) {
+							data = $.parseJSON(response);
+							// console.log('data',data)
+							if (data.error == 0) {
+								form.find('input,textarea').val('');
+								form.addClass('sended');
+								yaCounter24162886.reachGoal('orderdone');
 
-                        if (formId == 'order_apply_popup') {
-                            $('.popup-header').removeClass('active');
-                            yaCounter24162886.reachGoal('form_mobile_header');
+								if (formId == 'order_apply_popup') {
+									$('.popup-header').removeClass('active');
+									yaCounter24162886.reachGoal('form_mobile_header');
 
-                        } else {
-                            yaCounter24162886.reachGoal('form_listing');
-                        }
+								} else {
+									yaCounter24162886.reachGoal('form_listing');
+								}
 
-                        $('.popup-success-pink-form-wrap').addClass('active');
-                        $('.popup-overlay, .form-overlay').addClass('active');
+								$('.popup-success-pink-form-wrap').addClass('active');
+								$('.popup-overlay, .form-overlay').addClass('active');
 
-                        $('.popup-success-pink-form-wrap').html(
-                            `<div class="order_form-thankyou-wrap">
-                        <div class="order_form-thankyou-content">
-                            <div class="order_form-thankyou-close">
-                                <img src="/images/close_big.svg" alt="">
-                            </div>
-                            <div class="order_form-thankyou-title">
-                                Спасибо за заказ!
-                            </div>
-                            <div class="order_form-thankyou-desc">
-                                ${data.data.order_name}, мы получили ваш заказ, перезвоним вам
-                                в ближайшее время по номеру ${data.data.order_phone}
-                            </div>
-                        </div>
-                        </div>`
-                        );
-                    }
+								$('.popup-success-pink-form-wrap').html(
+									`<div class="order_form-thankyou-wrap">
+								<div class="order_form-thankyou-content">
+									<div class="order_form-thankyou-close">
+										<img src="/images/close_big.svg" alt="">
+									</div>
+									<div class="order_form-thankyou-title">
+										Спасибо за заказ!
+									</div>
+									<div class="order_form-thankyou-desc">
+										${data.data.order_name}, мы получили ваш заказ, перезвоним вам
+										в ближайшее время по номеру ${data.data.order_phone}
+									</div>
+								</div>
+								</div>`
+								);
+							}
 
 
-                },
-                error: function (response) {
-                    data = $.parseJSON(response);
-                    $('.flower_order_form_form').append(`<p>${data.message}</p>`);
-                },
-                complete: function () {
-                    $('.flower_order_form_form_wrap').removeAttr("style");
-                }
-            });
+						},
+						error: function (response) {
+							data = $.parseJSON(response);
+							$('.flower_order_form_form').append(`<p>${data.message}</p>`);
+						},
+						complete: function () {
+							$('.flower_order_form_form_wrap').removeAttr("style");
+						}
+					});
+				});
+			});
 
         }
 

@@ -681,6 +681,19 @@ class UpdateController extends Controller
                         Yii::app()->db->createCommand()->update($_POST['f'], array( 'main_description'=> $_POST['value']), 'id='. $_POST['id']);
                     } else {
                         Yii::app()->db->createCommand()->update($_POST['f'], array( $_POST['field']=> $_POST['value']), 'id='. $_POST['id']);
+
+                        $sql = 'SELECT product_id FROM prices p, products_prices pr WHERE p.id = pr.price_id and p.order = 1';
+                        $is_ready_product = $db->createCommand($sql)->queryAll();
+
+                        $sql0 = 'UPDATE products SET is_ready=1 WHERE id>0';
+                        $cmd = $db->createCommand($sql0);
+                        $cmd->execute();
+
+                        foreach ($is_ready_product as $key => $item) {
+                            $sql = 'UPDATE products SET is_ready=0 WHERE id='.$item['product_id'];
+                            $cmd = $db->createCommand($sql);
+                            $cmd->execute();
+                        }
                     }
 
 				 	if ($addFlower && $_POST['field']=='variants') {
@@ -948,6 +961,19 @@ class UpdateController extends Controller
 //				echo '<pre>';
 //				echo $names_flowers;
 //				die();
+
+                $sql = 'SELECT product_id FROM prices p, products_prices pr WHERE p.id = pr.price_id and p.order = 1';
+                $is_ready_product = $db->createCommand($sql)->queryAll();
+
+                $sql0 = 'UPDATE products SET is_ready=1 WHERE id>0';
+                $cmd = $db->createCommand($sql0);
+                $cmd->execute();
+
+                foreach ($is_ready_product as $key => $item) {
+                    $sql = 'UPDATE products SET is_ready=0 WHERE id='.$item['product_id'];
+                    $cmd = $db->createCommand($sql);
+                    $cmd->execute();
+                }
 
 
 			}elseif ($_POST['stat'] == 'product_rose') {

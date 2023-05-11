@@ -558,8 +558,9 @@ $(function() {
 			}
 		});
 	}
-	
+
 	function UpdateBasket(){
+		console.log('UpdateBasket1');
 		var allprice = 0;
 		var count = 0;
 		if (getCookie('cart')) {
@@ -570,14 +571,14 @@ $(function() {
 					var Arrone = $Arrcoockie[i].split(':');
 					count = count + eval(Arrone[2]);
 					allprice += parseInt(Arrone[1]);
-							
+
 				}
 			}
-			
+
 			allprice = allprice.toString().replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ')
 			allprice = allprice.replace(/ /, '&nbsp;')
 
-			
+
 			var item = get_correct_str(count, 'товар', 'товара', 'товаров');
 		} else {
 			var item = '0 товаров';
@@ -587,7 +588,7 @@ $(function() {
 			$('.basket').addClass('empty');
 		else
 			$('.basket').removeClass('empty');
-		
+
 		$('.basket_order_label').html('В&nbsp;корзине&nbsp;'+count+'&nbsp;товара на&nbsp;сумму&nbsp;<span>'+allprice+'&nbsp;рублей</span>');
 
 	}

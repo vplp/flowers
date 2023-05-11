@@ -10,6 +10,12 @@
     }
 </style>
 
+<?php
+//    echo '<pre>';
+//    print_r($product);
+//    die();
+?>
+
 <div class="wrap_sizes wrap_item" style="position:relative;overflow: hidden;">
     <div class="navigation_item active">
         <?php if (isset($prev['id'])) :
@@ -76,11 +82,14 @@
         $sm = '';
         $i = 1;
         foreach ($Arrimg as $img) {
-            $big .= '<div class="' . (($i == 1) ? 'select ' . ((Yii::app()->request->isPostRequest) ? 'aloading' : '') . '' : '') . '"><img id="big_' . $i . '" class="' . (($i == 1) ? 'select ' : '') . '" src="/uploads/460x460/' . $img . '" width="460"></div>';
+            $big .= '<div class="' . (($i == 1) ? 'select ' . ((Yii::app()->request->isPostRequest) ? 'aloading' : '') . '' : '') . '"><img id="big_' . $i . '" class="' . (($i == 1) ? 'select ' : '') . '" src="/uploads_water_new/460x460/' . str_replace('.jpg', '.webp', $img) . '" width="460"></div>';
             if (count($Arrimg) > 1)
                 $sm .= '<div id="sm_' . $i . '" class="sm_one ' . (($i == 1) ? 'select ' . ((Yii::app()->request->isPostRequest) ? '' : '') . '' : '') . '"><img src="/uploads/100x100/' . $img . '" width="98"></div>';
             $i++;
         }
+
+        //сохраняем неотсортированный массив, чтобы сохранить порядок вывода цветов в составе (item_feature)
+        $old_product_prices = $product['prices'];
 
         //сортируем массив, для того чтобы росстовка шла по возрастанию
         function value_function_asc($a, $b)
@@ -199,28 +208,60 @@
 //                                                die();
                 ?>
 
-
-                    <?php if(empty($product['prices'])):?>
-                    <div class="item_block_price">
-                        <span><?php echo number_format(($product['price']), 0, ',', ' '); ?></span>
-                        <?php echo Formats::getCountPrice($product['price']) ?>
-                    </div>
-
-                    <?php elseif($product['prices'] && $product['cat_uri']!='rozy'):?>
-                    <div class="item_block_price">
-                        <span><?php echo number_format(($product['price']), 0, ',', ' '); ?></span>
-                        <?php echo Formats::getCountPrice($product['price']) ?>
-                    </div>
-
-                    <?php else:?>
-                        <?php if($product['cat_uri']=='rozy'):?>
+                <?php if(!empty($product['features_price'])):?>
+                    <?php if($product['cat_id']!='73'):?>
+                        <?php if($product['features_price'][0]['feature_id']!='12' and $product['features_price'][0]['price']>0 and $product['features_price'][0]['value']!=''):?>
                             <div class="item_block_price">
-                                <span><?php echo number_format(($product['prices'][0]['cost']), 0, ',', ' '); ?></span>
-                                <?php echo Formats::getCountPrice($product['prices'][0]['cost']) ?>
+                                <span><?php echo number_format(($product['features_price'][0]['price']), 0, ',', ' '); ?></span>
+                                <?php echo Formats::getCountPrice($product['features_price'][0]['price']) ?>
                             </div>
-                            <div class="rose_subdesc">Цена указана за 1 розу</div>
+                        <?php else:?>
+                            <div class="item_block_price">
+                                <span><?php echo number_format(($product['price']), 0, ',', ' '); ?></span>
+                                <?php echo Formats::getCountPrice($product['price']) ?>
+                            </div>
                         <?php endif;?>
+                    <?php else:?>
+                        <div class="item_block_price">
+                            <span><?php echo number_format(($product['features_price'][0]['price']), 0, ',', ' '); ?></span>
+                            <?php echo Formats::getCountPrice($product['features_price'][0]['price']) ?>
+                        </div>
+                        <div class="rose_subdesc">Цена указана за 1 розу</div>
+                    <?php endif;?>
+
+                <?php else:?>
+                    <div class="item_block_price">
+                        <span><?php echo number_format(($product['price']), 0, ',', ' '); ?></span>
+                        <?php echo Formats::getCountPrice($product['price']) ?>
+                    </div>
                 <?php endif;?>
+
+
+<!--                    --><?php //if(empty($product['prices'])):?>
+<!--                    <div class="item_block_price">-->
+<!--                        <span>--><?php //echo number_format(($product['price']), 0, ',', ' '); ?><!--</span>-->
+<!--                        --><?php //echo Formats::getCountPrice($product['price']) ?>
+<!--                    </div>-->
+<!---->
+<!--                    --><?php //elseif($product['prices'] && $product['cat_uri']!='rozy'):?>
+<!--                    <div class="item_block_price">-->
+<!--                        <span>--><?php //echo number_format(($product['price']), 0, ',', ' '); ?><!--</span>-->
+<!--                        --><?php //echo Formats::getCountPrice($product['price']) ?>
+<!--                    </div>-->
+<!---->
+<!--                    --><?php //else:?>
+<!--                        --><?php //if($product['cat_uri']=='rozy'):?>
+<!--                            <div class="item_block_price">-->
+<!--                                <span>--><?php //echo number_format(($product['prices'][0]['cost']), 0, ',', ' '); ?><!--</span>-->
+<!--                                --><?php //echo Formats::getCountPrice($product['prices'][0]['cost']) ?>
+<!--                            </div>-->
+<!--                            <div class="rose_subdesc">Цена указана за 1 розу</div>-->
+<!--                        --><?php //endif;?>
+<!--                --><?php //endif;?>
+
+                <?php if(!($product['is_ready']==1 )) {?>
+                    <div class="not_order">Недоступно для заказа</div>
+                <?php }?>
 
                 <?php if ($line_feature_price != '' && !$lfp_is_empty) : ?>
                     <div class="item_feature">
@@ -242,30 +283,35 @@
                         if (($fearure['name'] == 'Состав' or $fearure['name'] == 'Размер') and $product['cat_uri'] == 'rozy')
                             continue;
 
+                        //$old_product_prices это неотсортированный массив $product['prices']
+                        //нужно для сохранения порядка вывода цветов в составе
                         $this->renderPartial('item_feature', array(
                             'feature' => $fearure,
-                            'product_prices' => $product['prices']
+                            'product_prices' => $old_product_prices
                         ));
                     }
                          ?>
                 <?php endforeach; ?>
 
-                <div class="item_feature" style="position:relative;">
-                    <div class="item_feature_label">Количество</div>
-                    <div class="one_product_price_desc_input_count">
-                        <div class="one_product_input_count_minus count_minus"> −</div>
-                        <div class="one_product_input_count_input"><input class="number" style="padding:8px 0;"
-                                                                          name="count" id="count_product" type="text"
-                                                                          value="1"></div>
-                        <div class="one_product_input_count_plus count_plus"> +</div>
+                <?php if($product['is_ready']==1 ) {?>
+                    <div class="item_feature" style="position:relative;">
+                        <div class="item_feature_label">Количество</div>
+                        <div class="one_product_price_desc_input_count">
+                            <div class="one_product_input_count_minus count_minus"> −</div>
+                            <div class="one_product_input_count_input"><input class="number" style="padding:8px 0;"
+                                                                              name="count" id="count_product" type="text"
+                                                                              value="1"></div>
+                            <div class="one_product_input_count_plus count_plus"> +</div>
+                        </div>
+                        <?php if ($CheckCount == 1) : ?>
+                            <div class="item_helper">Чтобы букет хорошо смотрелся,<br>выберите не меньше 7 роз</div>
+                        <?php endif ?>
                     </div>
-                    <?php if ($CheckCount == 1) : ?>
-                        <div class="item_helper">Чтобы букет хорошо смотрелся,<br>выберите не меньше 7 роз</div>
-                    <?php endif ?>
-                </div>
 
-                <a class="addtocart green_btn"
-                   href="/catalog/add/<?php echo $product['id'] ?><?php if ($fid != '') echo '?fid=' . $fid; ?>"><span>Добавить в корзину</span></a>
+                    <a class="addtocart green_btn"
+                       href="/catalog/add/<?php echo $product['id'] ?><?php if ($fid != '') echo '?fid=' . $fid; ?>"><span>Добавить в корзину</span>
+                    </a>
+                <?php } ?>
                 <!-- <a class="addtocart blue_btn" href="/catalog/add/<?php //echo $product['id']?><?php //if ($fid != '') echo '?fid='.$fid;?>" data-fastorder="2"><span>Заказ в один клик</span></a> -->
 
                 <div class="payment_info hide">
@@ -286,7 +332,11 @@
             <?php
                 foreach ($products as $key => $item) {
                     if ($item['cat_id']==$product['cat_id'] ||  ($item['cat_parent_id']!=0 && $item['cat_parent_id']==$product['parent_id'])) {
-                        continue;
+                        if ($item['id']==$product['id'] or $item['is_ready'] == 0) {
+                            unset($products[$key]);
+                        } else {
+                            continue;
+                        }
                     } else {
                         unset($products[$key]);
                     }
@@ -300,7 +350,8 @@
                             <?php $this->renderPartial('../catalog/items_line', array(
                                 'products' => $products,
                                 'sort' => false,
-                                'page' => 'product'
+                                'page' => 'product',
+                                'is_view' => true,
                             )); ?>
                         </div>
                     </div>
@@ -313,7 +364,8 @@
                             <?php $this->renderPartial('../catalog/items_line', array(
                                 'products' => $product['others'],
                                 'sort' => false,
-                                'page' => ''
+                                'page' => '',
+                                'is_view' => true,
                             )); ?>
                         </div>
                         <div class="br"></div>

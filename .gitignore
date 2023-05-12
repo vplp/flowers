@@ -22,6 +22,8 @@ public_html/webstat
 public_html/vendor/*
 public_html/vendor
 
+public_html/protected/config/main.php
+
 *.zip
 *.log
 *.webp

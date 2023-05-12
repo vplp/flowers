@@ -22,9 +22,6 @@ public_html/webstat
 public_html/vendor/*
 public_html/vendor
 
-yii/*
-yii
-
 *.zip
 *.log
 *.webp

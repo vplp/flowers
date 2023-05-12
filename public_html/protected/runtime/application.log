@@ -5016,3 +5016,41 @@ Stack trace:
 #10 {main}
 REQUEST_URI=/catalog/363
 ---
+2023/05/12 12:44:21 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Ой, такой страницы нет' in /home/t/tulip63ru/flowersvillage/public_html/protected/controllers/CatalogController.php:403
+Stack trace:
+#0 [internal function]: CatalogController->actionIndex('korzini', '606', '')
+#1 /home/t/tulip63ru/flowersvillage/yii/framework/web/actions/CAction.php(108): ReflectionMethod->invokeArgs(Object(CatalogController), Array)
+#2 /home/t/tulip63ru/flowersvillage/yii/framework/web/actions/CInlineAction.php(47): CAction->runWithParamsInternal(Object(CatalogController), Object(ReflectionMethod), Array)
+#3 /home/t/tulip63ru/flowersvillage/yii/framework/web/CController.php(308): CInlineAction->runWithParams(Array)
+#4 /home/t/tulip63ru/flowersvillage/yii/framework/web/CController.php(286): CController->runAction(Object(CInlineAction))
+#5 /home/t/tulip63ru/flowersvillage/yii/framework/web/CController.php(265): CController->runActionWithFilters(Object(CInlineAction), Array)
+#6 /home/t/tulip63ru/flowersvillage/yii/framework/web/CWebApplication.php(282): CController->run('index')
+#7 /home/t/tulip63ru/flowersvillage/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('catalog/index')
+#8 /home/t/tulip63ru/flowersvillage/yii/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#9 /home/t/tulip63ru/flowersvillage/public_html/index.php(26): CApplication->run()
+#10 {main}
+REQUEST_URI=/catalog/korzini/606
+---
+2023/05/12 13:00:51 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Ой, такой страницы нет' in /home/t/tulip63ru/flowersvillage/public_html/protected/controllers/SiteController.php:292
+Stack trace:
+#0 [internal function]: SiteController->actionPage('archivarix.cms....')
+#1 /home/t/tulip63ru/flowersvillage/yii/framework/web/actions/CAction.php(108): ReflectionMethod->invokeArgs(Object(SiteController), Array)
+#2 /home/t/tulip63ru/flowersvillage/yii/framework/web/actions/CInlineAction.php(47): CAction->runWithParamsInternal(Object(SiteController), Object(ReflectionMethod), Array)
+#3 /home/t/tulip63ru/flowersvillage/yii/framework/web/CController.php(308): CInlineAction->runWithParams(Array)
+#4 /home/t/tulip63ru/flowersvillage/yii/framework/web/CController.php(286): CController->runAction(Object(CInlineAction))
+#5 /home/t/tulip63ru/flowersvillage/yii/framework/web/CController.php(265): CController->runActionWithFilters(Object(CInlineAction), Array)
+#6 /home/t/tulip63ru/flowersvillage/yii/framework/web/CWebApplication.php(282): CController->run('page')
+#7 /home/t/tulip63ru/flowersvillage/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('site/page')
+#8 /home/t/tulip63ru/flowersvillage/yii/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#9 /home/t/tulip63ru/flowersvillage/public_html/index.php(26): CApplication->run()
+#10 {main}
+REQUEST_URI=/archivarix.cms.php
+---
+2023/05/12 13:37:03 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Невозможно обработать запрос "admin/elfinder/php/connector.minimal.php".' in /home/t/tulip63ru/flowersvillage/yii/framework/web/CWebApplication.php:286
+Stack trace:
+#0 /home/t/tulip63ru/flowersvillage/yii/framework/web/CWebApplication.php(141): CWebApplication->runController('admin/elfinder/...')
+#1 /home/t/tulip63ru/flowersvillage/yii/framework/base/CApplication.php(169): CWebApplication->processRequest()
+#2 /home/t/tulip63ru/flowersvillage/public_html/index.php(26): CApplication->run()
+#3 {main}
+REQUEST_URI=/admin/elfinder/php/connector.minimal.php
+---

@@ -156,6 +156,11 @@ $(document).ready(function () {
             }
         });
     });
+
+    $('.checkbox_pseudo').on('click', function() {
+        $('.confirm_btn').toggleClass('disabled');
+        $('#agree').toggleClass('error');
+    })
 });
 
 
@@ -2142,7 +2147,12 @@ $(function () {
                                 })
                             })
 
+                            // check = agreeDefine(check);
+
                             $('.sendalert').removeClass('show');
+
+                            console.log('check', check);
+
                             if (check) {
                                 $('.progress_send').addClass('show');
 
@@ -2171,6 +2181,7 @@ $(function () {
                                             deliveryStringCart = 'Доставка ' + localStorageDelivery + ' ₽';
                                         }
 
+                                        console.log('success send', );
 
                                         $('.cart-page').html(
                                             `<div class="success-order-wrap">
@@ -2369,6 +2380,19 @@ basketStep = {
             $('.return_cart').removeClass('_active')
         }
     },
+}
+
+function agreeDefine(check) {
+
+    let isAgree = $('#agree').hasClass('error');
+
+    if (isAgree) {
+        check = check ? true : false;
+    } else {
+        check = false;
+    }
+
+    return check;
 }
 
 function customScroll(el, offset) {

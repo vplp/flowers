@@ -279,9 +279,17 @@
 			<span>Итого с учетом доставки</span>
 			<span><?php echo number_format(($all_price), 0, ',', ' '); ?> ₽</span>
 		</div>
+
 		<div class="cart-order-checkout-btn">
 			<button class="confirm_btn">Оформить заказ</button>
 		</div>
+
+        <div class="agree_wrap">
+            <input class="form-input" type="hidden" id="agree" checked="true" required>
+            <div class="checkbox_pseudo">
+                <label for="agree">Принимаю условия <a class="blue" href="/policy">политики обработки персональных данных</a></label>
+            </div>
+        </div>
 	</div>
 
 </div>

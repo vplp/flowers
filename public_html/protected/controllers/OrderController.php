@@ -8,6 +8,11 @@ class OrderController extends Controller
 
     public function actionIndex()
     {
+
+//        echo "<pre>";
+//        print_r(Yii::app()->request->cookies['cart']);
+//        die();
+        
         if (!Yii::app()->request->isPostRequest || !isset($_POST['Order']) || (string)Yii::app()->request->cookies['cart'] == '')
             throw new CHttpException(404, 'Страница не найдена');
 
@@ -82,8 +87,14 @@ class OrderController extends Controller
         }
 
         if ($order->save(false)) {
-            Yii::app()->request->cookies['cart'] = new CHttpCookie('cart', '');
+//            Yii::app()->request->cookies['cart'] = new CHttpCookie('cart', '');
             $mail = new SendToMail();
+
+//            echo "<pre>";
+//            echo "форма отправлена";
+//            print_r();
+//            die();
+
             $mail->SendOrder($order, $sizes);
             echo CJSON::encode(array(
                 'error' => 0,

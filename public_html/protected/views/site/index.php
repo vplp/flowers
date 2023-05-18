@@ -298,7 +298,9 @@ foreach ($cats as $cat) { ?>
 		$productsCount = count($cat->products);
 		if ($cat->id == 73) {
 			$productsCount += $count_byket_in_roses;
-		}?>
+		}
+		
+		?>
 		<div class="wrap_block resize_block fixed_height  <?if (isset($class)) echo $class;?>  a_load_block">
 			<div class="block_label aloading"><a class="blue"  href="/catalog/<?php echo $cat->uri?>"><?php echo $cat->name?></a><sup>&nbsp;<?php echo Formats::getCountItems($productsCount)?></sup></div>
 				<div id="products_line" class="products_line ">

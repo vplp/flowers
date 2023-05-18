@@ -33,7 +33,13 @@
 	}
 	
     foreach ($products as $product) { ?>
+
         <?php
+
+        $db = Yii::app()->db;
+        $sql = 'SELECT category_id FROM products_category as pc, categories as c WHERE pc.product_id='.$product['id'].' and pc.category_id = c.id and c.typeCategory = 1';
+        $product_cat = $db->createCommand($sql)->queryScalar();
+
 		/**
         if (!$product['prices']) {
             $product['prices'] = Yii::app()->params['products_global'][$i]['prices'];
@@ -69,9 +75,11 @@
 
                 <?php if(!empty($product)) { ?>
                     <?php if ($product['price']) { ?>
+                        <?php if($product_cat == 73) echo 'от ';?>
                         <span class="item_price"><?php echo number_format(($product['price']), 0, ',', ' '); ?>
                             <span class="b-rub">Р</span>
                         </span>
+                        <?php if($product_cat == 73) echo ' за шт.';?>
                     <?php } ?>
                 <?php } ?>
 

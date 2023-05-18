@@ -5,6 +5,11 @@ protected/runtime/*
 protected/data/*.db
 themes/classic/views/
 uploads/*
+uploads_new/*
+
+public_html/uploads_new
+uploads_new
+
 uploads_old/*
 uploads_water/*
 uploads_water_new/*
@@ -21,8 +26,6 @@ public_html/webstat
 
 public_html/vendor/*
 public_html/vendor
-
-public_html/protected/config/main.php
 
 *.zip
 *.log

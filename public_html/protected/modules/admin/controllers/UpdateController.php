@@ -610,23 +610,36 @@ class UpdateController extends Controller
 
 			 	 	Yii::app()->db->createCommand()->update($_POST['f'], array($_POST['field'] => $cost), 'id=:id', array(':id' => $price_id));
 
-			 	 	$product_prices = Yii::app()->db->createCommand('SELECT * FROM products_prices WHERE price_id = ' . $price_id)->queryALL();
+                    $product_cat = Yii::app()->db->createCommand('SELECT category_id FROM products_category as pc, categories as c WHERE pc.product_id='.$product_id.' and pc.category_id = c.id and c.typeCategory = 1;')->queryScalar();
 
-			 	 	$product_prices_height = Yii::app()->db->createCommand('SELECT products_prices.*, prices.height as height FROM products_prices, prices WHERE products_prices.price_id = prices.id and price_id = ' . $price_id)->queryALL();
+                    $product_prices = Yii::app()->db->createCommand('SELECT * FROM products_prices WHERE price_id = ' . $price_id)->queryALL();
 
 			 	 	if (!empty($product_prices)) {
 			 	 		foreach ($product_prices as $product_price) {
 
 			 	 			$total = 0;
+                            $min_price = 99999;
+                            $product_cat = Yii::app()->db->createCommand('SELECT category_id FROM products_category as pc, categories as c WHERE pc.product_id='.$product_price['product_id'].' and pc.category_id = c.id and c.typeCategory = 1;')->queryScalar();
 
-			 	 			$prices = Yii::app()->db->createCommand('SELECT product_id, price_id, quantity FROM products_prices WHERE product_id = ' . $product_price['product_id'])->queryALL();
+                            $prices = Yii::app()->db->createCommand('SELECT product_id, price_id, quantity FROM products_prices WHERE product_id = ' . $product_price['product_id'])->queryALL();
+                            
+                            if ($product_cat == 73) {
+                                foreach ($prices as $price) {
+                                    $row = Yii::app()->db->createCommand('SELECT cost FROM prices WHERE id = ' . $price['price_id'])->queryRow();
 
-			 	 			foreach ($prices as $price) {
-			 	 				$row = Yii::app()->db->createCommand('SELECT cost FROM prices WHERE id = ' . $price['price_id'])->queryRow();
+                                    if ($row['cost'] < $min_price)
+                                        $min_price = $row['cost'];
+                                }
 
-			 	 				if ($row['cost'] > 0)
-									$total += $row['cost'] * $price['quantity'];
-			 	 			}
+                                $total = $min_price;
+                            } else {
+                                foreach ($prices as $price) {
+                                    $row = Yii::app()->db->createCommand('SELECT cost FROM prices WHERE id = ' . $price['price_id'])->queryRow();
+
+                                    if ($row['cost'] > 0)
+                                        $total += $row['cost'] * $price['quantity'];
+                                }
+                            }
 
 			 	 			Yii::app()->db->createCommand()->update('products', array('price'=> $total, 'price_update' => time()), 'id=:id', array(':id' => $product_price['product_id']));
 
@@ -642,21 +655,45 @@ class UpdateController extends Controller
 					$products_price_data = Yii::app()->db->createCommand('SELECT price_id, quantity FROM products_prices WHERE product_id = ' . $product_id)->queryAll();
 					$florist_services_price = $_POST['value'];
 
+                    $product_cat = Yii::app()->db->createCommand('SELECT category_id FROM products_category as pc, categories as c WHERE pc.product_id='.$product_id.' and pc.category_id = c.id and c.typeCategory = 1;')->queryScalar();
+
 					$total = 0;
 
-					foreach ($products_price_data as $product_price) {
+					$min_price = 99999;
+					//если роза
+                    if ($product_cat == 73) {
+                        foreach ($products_price_data as $product_price) {
 
-						$price_id = $product_price['price_id'];
-						$quantity = $product_price['quantity'];
+                            $price_id = $product_price['price_id'];
+                            $quantity = $product_price['quantity'];
 
-						if ($price_id > 0 && $quantity > 0) {
-							$row = Yii::app()->db->createCommand('SELECT cost FROM prices WHERE id = ' . $price_id)->queryRow();
+                            if ($price_id > 0 && $quantity > 0) {
+                                $row = Yii::app()->db->createCommand('SELECT cost FROM prices WHERE id = ' . $price_id)->queryRow();
 
-							if ($row['cost'] > 0)
-								$total += $row['cost'] * $quantity;
-						}
-					}
-					$total += (int)$florist_services_price;
+                                if ($row['cost'] < $min_price)
+                                    $min_price = $row['cost'];
+                            }
+                        }
+
+                        $total = $min_price;
+
+                    } else {
+                        foreach ($products_price_data as $product_price) {
+
+                            $price_id = $product_price['price_id'];
+                            $quantity = $product_price['quantity'];
+
+                            if ($price_id > 0 && $quantity > 0) {
+                                $row = Yii::app()->db->createCommand('SELECT cost FROM prices WHERE id = ' . $price_id)->queryRow();
+
+                                if ($row['cost'] > 0)
+                                    $total += $row['cost'] * $quantity;
+                            }
+                        }
+
+                        $total += (int)$florist_services_price;
+                    }
+                    
 					Yii::app()->db->createCommand()->update('products', array('price'=> $total, 'price_update' => time()), 'id=:id', array(':id' => $product_id));
 					Yii::app()->db->createCommand()->update('products', array( 'florist_services_price'=> $_POST['value']), 'id=:id', array(':id' => $_POST['id']));
                 }elseif ($_POST['stat'] == 'editfield' && $_POST['field'] == 'page_title') {

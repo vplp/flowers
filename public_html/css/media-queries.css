@@ -469,6 +469,10 @@
         font-size: 18px;
         max-width: 280px;
     }
+
+    #order_apply .checkbox_pseudo {
+        max-width: 280px;
+    }
     .flower_order_form_bg {
         background-image: none;
         background: #E6688E;

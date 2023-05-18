@@ -126,9 +126,14 @@
 
 			</div>
 			<input class="form-input fake" type="text" name="recaptcha_token" autocomplete="no">
-			<button type="button" class="form-btn confirm_apply_btn">Отправить</button>
+			<button type="button" class="form-btn confirm_btn confirm_apply_btn">Отправить</button>
 		</form>
-
+        <div class="agree_wrap">
+            <input class="form-input" type="hidden" id="agree" checked="true" required>
+            <div class="checkbox_pseudo">
+                <label for="agree">Принимаю условия <a class="white" href="/policy">политики обработки персональных данных</a></label>
+            </div>
+        </div>
 	</div>
 
 </div>

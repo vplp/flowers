@@ -13,6 +13,9 @@ RewriteCond %{HTTPS} off
 RewriteCond %{HTTP:X-Forwarded-Proto} !https
 RewriteRule ^(.*)$ https://flowersvillage.ru%{REQUEST_URI} [L,R=301]
 
+RewriteRule ([^.]+\.(jpg|jpeg|webp|png))$ https://flowersvillage.ru/$1 [R=301,L,NC]
+
+
 #RewriteCond %{REQUEST_URI} ^/catalog/byketi/([0-9]*)$
 #RewriteRule ^(.*)$ https://flowersvillage.ru/catalog/%1 [R=302,L]
 

@@ -11,6 +11,11 @@
 
 	<link href="/css/template.css?v=6" type="text/css" rel="stylesheet" />
 	<link href='https://fonts.googleapis.com/css?family=PT+Serif:400,700&subset=latin,cyrillic-ext,cyrillic' rel='stylesheet' type='text/css'>
+
+    <link async rel="preconnect" href="https://fonts.googleapis.com">
+    <link async rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link async href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Manrope:wght@300;500;700;800&family=Montserrat:wght@300;500;600;700;800&family=Prompt:wght@100;300;500&display=swap" rel="stylesheet">
+
 		<!--[if lt IE 8 ]>
 			<link href="/css/ie7.css?v=7" type="text/css" rel="stylesheet" />
 		<![endif]-->
@@ -19,6 +24,7 @@
 	<script src="/js/maskedinput.min.js" type="text/javascript"></script>
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 	<script src="/js/datepicker-ru.js"></script>
+    
 	<?php if (Yii::app()->user->getState('edit')) :?>
 		
 		<!-- <script type="text/javascript" src="/js/jquery-ui-1.9.2.custom.min.js"></script>	 -->
@@ -316,7 +322,7 @@
 		<iframe src="https://yandex.ru/map-widget/v1/?z=12&ol=biz&oid=129741371697" width="100%" height="500" frameborder="0"></iframe>
 	</div>
 </div>
-<div style="width:100%; height:130px;"></div>
+<div class="footer_height"></div>
 <!--  test git2-->
 	<div class="footer">
 
@@ -332,11 +338,44 @@
 			?>	
 
 		<div class="wrap_sizes">
-			<div class="footer_left">© 2004–<?php echo date('Y')?>  <a href="/">Цветы в Кинеле</a></div>
+<!--			<div class="footer_left">© 2004–--><?php //echo date('Y')?><!--  <a href="/">Цветы в Кинеле</a></div>-->
 			<!--<div style="width:25%;text-align:left; float:left"><a class="gray" href="/actions">Акции</a><a class="gray" style="margin-left:30px" href="/contacts">Контакты</a></div> 
 			<div class="artcream">Сайт разработан в <a href="http://artcream.ru" class="artcream_logo">
 				<span class="artcream_text">Арткриме</span></a>
 			</div>-->
+
+            <div class="footer_container">
+                <div class="footer_part1">
+                    <div class="footer_refs">
+                        <div class="refs_top">
+                            <div class="main_link">© 2004–<?php echo date('Y')?>  <a class="blue_link" href="/">Цветы в Кинеле</a></div>
+                            <div class="main_law"><a class="blue_link" href="/policy#law">Все права защищены</a></div>
+                        </div>
+                        <div class="main_confidentiality"><a class="blue_link" href="/policy">«Политика конфиденциальности»</a></div>
+                    </div>
+                    <div class="footer_warn">
+                        <img src="/images/warning.svg" alt="">
+                        <p>Цены носят исключительно информационный характер и не являются публичной офертой</p>
+                    </div>
+                </div>
+                <div class="footer_part2">
+                    <div class="footer_working">
+                        <p>Заявки на сайте принимаются круглосуточно, обработка заказов происходит ежедневно с 6:40 до 23:00</p>
+                        <a class="white_link" href="/dostavka">Оплата и доставка</a>
+                    </div>
+                    <div class="footer_contacts">
+                        <div class="phone">
+                            <img src="/images/header-phone.svg" alt="phone">
+                            <a href="tel:+79967414590"> +7 996 741 45 90</a>
+                        </div>
+                        <p class="address">
+                            <img src="/images/header-geo.svg" alt="geo">
+                            <span>г. Кинель: ул. Орджоникидзе, д.76</span>
+                    </div>
+                </div>
+                </div>
+            </div>
+
 			<div class="br"></div>
 		</div>
 

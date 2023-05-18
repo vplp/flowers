@@ -14,8 +14,8 @@ class SendToMail {
 	
 	public function SendMail($to , $body, $subject, $from, $from_name, $PathToFile = '', $file = '') {
 
-		
-	
+
+
 // 		$mail = new PHPMailer();
 // 		$mail->IsSMTP();
 // 		$mail->SMTPAuth = true;
@@ -45,10 +45,12 @@ class SendToMail {
 		$headers .= 'From: '.$from_name.' <shny0990@gmail.com>' . "\r\n";
 //        $headers .= 'From: '.$from_name.' <vp@liderpoiska.ru>' . "\r\n";
 
-		mail($to, $subject, $body, $headers);//, '-fnoreply@artcream.ru'
+//
+		mail($to, $subject, $body, $headers);
+		    //, '-fnoreply@artcream.ru'
 
-	    
-	}
+
+    }
 	private function SendSMS($params) {
 		$smsApi = new Transport();
 		$phones = Yii::app()->params['toPhone'];
@@ -159,10 +161,12 @@ class SendToMail {
 							<br>
 							</body>
 			';
-	
-		$header = 'Заказ с сайта  Флау-вил';
+
+        $header = 'Заказ с сайта  Флау-вил';
 		$this->SendMail(implode(', ', Yii::app()->params['toEmail']), $body, $header, '', 'Flau-vil');
-	}
+
+
+    }
 	
 	
 	public function SendOrdertoUser($ARRfield){
@@ -257,7 +261,8 @@ class SendToMail {
 			$newArrprod[$i]['fid'] = $Arrone[3];
 			$i++;
 		}
-		if (count($line_where) > 0){
+
+        if (count($line_where) > 0){
 			$sql = 'SELECT p.*
 			, c.uri as cat_uri FROM products p INNER JOIN products_category pc ON pc.product_id = p.id INNER JOIN categories c ON c.id = pc.category_id 
 			WHERE p.id IN ('.implode(', ', $line_where).') GROUP by p.id ';
@@ -271,8 +276,8 @@ class SendToMail {
 			}
 		} else
 			$products = array();
-		
-		$line_prod = '';
+
+        $line_prod = '';
 		$line_prod_mob = '';
 		$all_price = 0;
 		$cat_id = 0;
@@ -339,12 +344,17 @@ class SendToMail {
 						</tbody>
 					</table>
 		';
-		
+
+
 //		$this->AddEmailClass();
 		$this->SendOrdertoUser($ARRfield);
-		$this->SendOrdertoAdmin($ARRfield);
-		$this->SendTg($order, $products, $sizes);
-	}
+
+        $this->SendOrdertoAdmin($ARRfield);
+
+
+        $this->SendTg($order, $products, $sizes);
+
+    }
 	
 	public function Html2Pdf($content){
 	

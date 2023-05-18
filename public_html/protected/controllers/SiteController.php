@@ -49,6 +49,7 @@ class SiteController extends Controller
 			],
 		])
 		->findAll($criteria);
+		
 		//echo '<pre>';print_r($cats);exit;
 		//echo '<pre>';print_r($cats);exit;
 //        $sql = 'SELECT c.* , COUNT(pc.category_id) as count_pFROM categories c LEFT JOIN  products_category pc ON pc.category_id = c.id LEFT JOIN  products p ON pc.product_id = p.id WHERE c.visibly = 1 and c.parent_id = 0 group by c.id  ORDER BY c.orders ASC';
